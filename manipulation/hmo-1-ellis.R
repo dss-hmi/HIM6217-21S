@@ -22,10 +22,9 @@ library(dplyr)
 path_source_xlsx <- "data-public/raw/hmo-1/hmo-1.xlsx"
 path_db  <- "data-public/derived/hmo-1-db.sqlite3"
 
-path_patients <- "./data-public/hmo-1/hmo-1-patients.csv"
-path_visits <- "./data-public/hmo-1/hmo-1-visits.csv"
+path_patients <- "./data-public/raw/hmo-1/hmo-1-patients.csv"
+path_visits <- "./data-public/raw/hmo-1/hmo-1-visits.csv"
 # Execute to specify the column types.  
-
 col_types_patients <- 
   readr::cols_only(
     `patient_id` = readr::col_integer(),
@@ -34,7 +33,6 @@ col_types_patients <-
     `sex`        = readr::col_character(),
     `dob`        = readr::col_date()
 )
-
 col_types_visits <- 
   readr::cols_only(
     `visit_id`     = readr::col_integer(),
@@ -43,23 +41,12 @@ col_types_visits <-
 )
 
 # ---- load-data ---------------------------------------------------------------
-sheet_names <- readxl::excel_sheets(path_source_xlsx)
-dto <- list()
-for(sheet_i in sheet_names){
-  # i <- sheet_names[1]
-  dto[[sheet_i]] <- readxl::read_xlsx(path_source_xlsx, sheet = sheet_i)
-}
-lapply(dto,glimpse)
-lapply(dto,names)
 # Read the CSVs
-ds <- readr::read_csv(config$path_ss_county  , col_types=col_types)
-
-ds_patients <- readxl::read_xlsx(path_source_xlsx, sheet = "patients",
-                                 col_types =  col_types_patients)
-ds_visits <- readxl::read_xlsx(path_source_xlsx, sheet = "visits")
+ds_patients <- readr::read_csv(path_patients , col_types=col_types_patients)
+ds_visits   <- readr::read_csv(path_visits , col_types=col_types_visits)
 
 
-rm(col_types)
+rm(col_types_patients,col_types_visits)
 
 # ---- tweak-data --------------------------------------------------------------
 # OuhscMunge::column_rename_headstart(ds) # Help write `dplyr::select()` call.
