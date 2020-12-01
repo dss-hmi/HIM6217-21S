@@ -16,4 +16,4 @@ FROM v5_2.person as p
   left  join v5_2.concept as c_gender    on p.gender_concept_id      = c_gender.concept_id
   left  join v5_2.concept as c_race      on p.race_concept_id        = c_race.concept_id
   left  join v5_2.concept as c_ethnicity on p.ethnicity_concept_id   = c_ethnicity.concept_id
-ORDER BY person_id
+WHERE person_id between 1 and 20

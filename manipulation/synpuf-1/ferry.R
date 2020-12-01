@@ -20,35 +20,49 @@ requireNamespace("OuhscMunge"                 )  # remotes::install_github("Ouhs
 # ---- declare-globals ---------------------------------------------------------
 # Constant values that won't change.
 # config      <- config::get()
-dsn             <- "omop_synpuf"
-path_db_1       <- "data-public/exercises/synpuf-1.sqlite3"
-path_sql_1      <- "manipulation/synpuf-1/subset.sql"
+dsn                   <- "omop_synpuf"
+path_db_1             <- "data-public/exercises/synpuf-1.sqlite3"
+path_sql_pt           <- "manipulation/synpuf-1/pt.sql"
+path_sql_dx           <- "manipulation/synpuf-1/dx.sql"
 
 # ---- load-data ---------------------------------------------------------------
+ds_pt <- OuhscMunge::execute_sql_file(path_sql_pt, dsn, execute = F)
+ds_dx <- OuhscMunge::execute_sql_file(path_sql_dx, dsn, execute = F)
 
-ds <- OuhscMunge::execute_sql_file(path_sql_1, dsn, execute = F)
-
-checkmate::assert_data_frame(ds, min.rows = 10)
-rm(path_sql_1)
+checkmate::assert_data_frame(ds_pt, min.rows = 10)
+checkmate::assert_data_frame(ds_dx, min.rows = 10)
+rm(path_sql_pt, path_sql_dx)
 
 # ---- tweak-data --------------------------------------------------------------
+ds_pt <- 
+  ds_pt %>% 
+  tibble::as_tibble() %>%
+  dplyr::mutate(
+    dob                 = strftime(dob, "%Y-%m-%d"),
+  )
 
+ds_dx <- 
+  ds_dx %>% 
+  tibble::as_tibble() %>%
+  dplyr::mutate(
+    dx_date             = strftime(dx_date, "%Y-%m-%d"),
+    icd9_description    = OuhscMunge::deterge_to_ascii(icd9_description)
+  )
 
 # ---- verify-values -----------------------------------------------------------
-# OuhscMunge::verify_value_headstart(ds)
-checkmate::assert_integer(  ds$person_id , any.missing=F , lower=1, upper=999                           , unique=T)
-checkmate::assert_date(     ds$dob       , any.missing=F , lower=as.Date("1919-01-01"), upper=as.Date("1977-01-01"))
-checkmate::assert_character(ds$gender    , any.missing=F , pattern="^.{4,50}$"                                    )
-checkmate::assert_character(ds$race      , any.missing=T , pattern="^.{4,50}$"                                    )
-checkmate::assert_character(ds$ethnicity , any.missing=F , pattern="^.{4,50}$"                                    )
+# OuhscMunge::verify_value_headstart(ds_dx)
+checkmate::assert_integer(  ds_pt$person_id , any.missing=F , lower=1, upper=999                           , unique=T)
+checkmate::assert_character(ds_pt$dob       , any.missing=F , pattern = "^\\d{4}-\\d{2}-\\d{2}$")
+checkmate::assert_character(ds_pt$gender    , any.missing=F , pattern="^.{4,50}$"                                    )
+checkmate::assert_character(ds_pt$race      , any.missing=T , pattern="^.{4,50}$"                                    )
+checkmate::assert_character(ds_pt$ethnicity , any.missing=F , pattern="^.{4,50}$"                                    )
 
-# ---- specify-columns-to-upload -----------------------------------------------
-# Print colnames that `dplyr::select()`  should contain below:
-#   cat(paste0("    ", colnames(ds_county_month), collapse=",\n"))
-#   cat(paste0("    ", colnames(ds_county), collapse=",\n"))
-
-ds_slim <- ds
-
+checkmate::assert_integer(  ds_dx$dx_id            , any.missing=F , lower=1, upper=6342  , unique=T)
+checkmate::assert_integer(  ds_dx$person_id        , any.missing=F , lower=1, upper=48    )
+checkmate::assert_character(ds_dx$dx_date          , any.missing=F , pattern = "^\\d{4}-\\d{2}-\\d{2}$")
+checkmate::assert_character(ds_dx$icd9_code        , any.missing=F , pattern="^.{5,6}$"   )
+checkmate::assert_character(ds_dx$icd9_description , any.missing=F , pattern="^.{2,255}$" )
+checkmate::assert_logical(  ds_dx$inpatient_visit  , any.missing=F                        )
 
 # ---- save-to-db --------------------------------------------------------------
 # If there's *NO* PHI, a local database like SQLite fits a nice niche if
@@ -67,6 +81,19 @@ sql_create <- c(
       race        varchar(50)       null,
       ethnicity   varchar(50)       null
     );
+  ",
+  "
+    DROP TABLE IF EXISTS dx;
+  ",
+  "
+    CREATE TABLE `dx` (
+      dx_id            integer       primary key,
+      person_id        integer       not null,
+      dx_date          date          not null,
+      icd9_code        varchar(10)   not null,
+      icd9_description varchar(10)   not null,
+      inpatient_visit  varchar(255)  not null
+    );
   "
 )
 # Remove old DB
@@ -79,17 +106,15 @@ cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db_1)
 DBI::dbListTables(cnn)
 
 # Create tables
-sql_create %>%
+sql_create[1:4] %>%
   purrr::walk(~DBI::dbExecute(cnn, .))
+
 DBI::dbListTables(cnn)
 
 # Write to database
 # DBI::dbWriteTable(cnn, name='patient',              value=ds,        append=TRUE, row.names=FALSE)
-ds %>%
-  dplyr::mutate(
-    dob                 = strftime(dob, "%Y-%m-%d"),
-  ) %>%
-  DBI::dbWriteTable(value=., conn=cnn, name='patient', append=TRUE, row.names=FALSE)
+DBI::dbWriteTable(value=ds_pt, conn=cnn, name='patient', append=TRUE, row.names=FALSE)
+DBI::dbWriteTable(value=ds_dx, conn=cnn, name='dx', append=TRUE, row.names=FALSE)
 
 # Close connection
 DBI::dbDisconnect(cnn)
