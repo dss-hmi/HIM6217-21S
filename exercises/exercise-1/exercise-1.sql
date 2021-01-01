@@ -1,4 +1,5 @@
 -- Exercise 1
+-- All questions target the table `patient` in the database `synpuf-1`
 
 -- 1.1 How many men are in the patient table?
 -- Requirements:
