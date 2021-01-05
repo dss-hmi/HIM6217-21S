@@ -39,7 +39,8 @@ ds_pt <-
   tibble::as_tibble() %>%
   dplyr::mutate(
     dob                 = strftime(dob, "%Y-%m-%d"),
-  )
+  ) #%>% 
+  # dplyr::filter(person_id %in% 1:36)
 
 ds_dx <- 
   ds_dx %>% 
