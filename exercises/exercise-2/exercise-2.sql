@@ -61,7 +61,7 @@ ORDER BY icd9_description DESC
 ;
 
 
--- How many times  diagnoses 'Pain in neck' or 'Pain in limb' appear in the dx table?
+-- How many times either of two diagnoses 'Pain in neck' or 'Pain in limb' appear in the dx table?
 -- Requirements:
 ---- Must use: count(), WHERE, IN
 ---- Output dimensions: 1x1
@@ -70,6 +70,24 @@ FROM dx
 WHERE icd9_description IN (
   'Pain in neck', 'Pain in limb'
 )
+;
+
+-- How many distinct ICD-9 diagnoses include the word 'pain' in their description?
+-- Requirements:
+---- Must use: count(), distinct(), WHERE, LIKE
+---- Output dimensions: 1x1
+SELECT count(distinct(icd9_description))
+FROM dx
+WHERE icd9_description LIKE '%pain%'
+;
+
+-- How many distinct ICD-9 diagnoses begin with the word 'pain' in their description?
+-- Requirements:
+---- Must use: count(), distinct(), WHERE, LIKE
+---- Output dimensions: 1x1
+SELECT count(distinct(icd9_description))
+FROM dx
+WHERE icd9_description LIKE 'pain%'
 ;
 
 
