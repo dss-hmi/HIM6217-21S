@@ -24,6 +24,16 @@ library(lubridate) # dates
 
 
 # ---- load-data ---------------------------------------------------------------
+ds_quiz_template <- readr::read_csv("./quizzes/respondus-csv-column-names.csv")
+
+target_items <- c(
+  
+)
+
+import::from("magrittr", "%>%")
+babynames::babynames %>%
+  dplyr::filter(year == 1880L) %>%
+  dplyr::pull(name)
 
 
 # ---- tweak-data --------------------------------------------------------------
