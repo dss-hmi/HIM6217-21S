@@ -19,30 +19,9 @@ library(lubridate) # dates
 
 # ---- load-sources ------------------------------------------------------------
 
-source("./scripts/common-functions.R")
-
-
 # ---- declare-globals ---------------------------------------------------------
-# custom function for HTML tables
-neat <- function(x, output_format = "html"){ 
-  # knitr.table.format = output_format
-  if(output_format == "pandoc"){
-    x_t <- knitr::kable(x, format = "pandoc")
-  }else{
-    x_t <- x %>%
-      # x %>%
-      # neat() %>%
-      knitr::kable(format=output_format) %>%
-      kableExtra::kable_styling(
-        bootstrap_options = c("striped", "hover", "condensed","responsive"),
-        # bootstrap_options = c( "condensed"),
-        full_width = F,
-        position = "left"
-      )
-  } 
-  return(x_t)
-}
 # Note: when printing to Word or PDF use `neat(output_format =  "pandoc")`
+
 
 # ---- load-data ---------------------------------------------------------------
 
