@@ -5,11 +5,11 @@
     - must use `count`
   code: |
     SELECT
-      count(distinct(customer_id))
+      count(distinct(customer_id)) as count_customer
     FROM customer
-  answers:
-    - 5
-    - five
+  # answers:
+  #   - 5
+  #   - five
 -
   prompt: How many unique orders does Rexon Metal have?
   requirements:
@@ -17,8 +17,8 @@
     - must use `count`
   code: |
     SELECT
-      count(distinct(order_id))
+      count(distinct(customer_id)) as count_customer
     FROM customer
-  answers:
-    - 4
-    - four
+  # answers:
+  #   - 4
+  #   - four

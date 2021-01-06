@@ -26,19 +26,19 @@ path_db <- "./data-public/textbook/oreilly_getting_started_with_sql/rexon_metals
 # ---- load-data ---------------------------------------------------------------
 ds_quiz_template <- readr::read_csv("./quizzes/respondus-csv-column-names.csv")
 
-target_items <- c(
-  
-)
-
-
-sql_question <- c(
-  "
-  -- 1. How many unique customers does Rexon Metal have?
-  ---- Requirements:
-  ---- Must use: SELECT, count()
-  "
-)
-
+# target_items <- c(
+#   
+# )
+# 
+# 
+# sql_question <- c(
+#   "
+#   -- 1. How many unique customers does Rexon Metal have?
+#   ---- Requirements:
+#   ---- Must use: SELECT, count()
+#   "
+# )
+# 
 sql_solution <- c(
   "
   SELECT  count(distinct(customer_id))
@@ -46,24 +46,37 @@ sql_solution <- c(
   ;
   "
 )
-cnn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = path_db)
-ds_solution <- DBI::dbGetQuery(cnn, sql_solution)
-DBI::dbDisconnect(cnn); rm(cnn, sql_solution)
 
-solution_value <- ds_solution[1,1]
+input <- yaml::read_yaml("data-public/exercises/exercise-1-input.yml")
+output <- input # Start with the same input, and augment it wil the answers.
+ 
+for(i in seq_along(input)) {
+  sql_solution <- input[[i]]$code
+  
+  cnn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = path_db)
+  ds_solution <- DBI::dbGetQuery(cnn, sql_solution)
+  DBI::dbDisconnect(cnn); rm(cnn, sql_solution)
+  
+  output[[i]]$answer <- ds_solution[1,1]
+}
 
-# ---- q01 -------------------------------------
-
--- 1. How many unique customers does Rexon Metal have?
-  -- Requirements:
-  -- Must use: SELECT, count()
-SELECT  count(distinct(customer_id))
-FROM  customer
-;
-
-
-# ---- tweak-data --------------------------------------------------------------
+yaml::write_yaml(output, "data-public/exercises/exercise-1-output.yml")
 
 
-# ---- table-1 -----------------------------------------------------------------
+# solution_value <- ds_solution[1,1]
 
+# # ---- q01 -------------------------------------
+# 
+# -- 1. How many unique customers does Rexon Metal have?
+#   -- Requirements:
+#   -- Must use: SELECT, count()
+# SELECT  count(distinct(customer_id))
+# FROM  customer
+# ;
+# 
+# 
+# # ---- tweak-data --------------------------------------------------------------
+# 
+# 
+# # ---- table-1 -----------------------------------------------------------------
+# 
