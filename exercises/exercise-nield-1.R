@@ -65,6 +65,23 @@ yaml::write_yaml(output, "data-public/exercises/exercise-1-output.yml")
 
 # solution_value <- ds_solution[1,1]
 
+
+# ---- convert-lists-to-rectangle ----------------------------------------------
+
+output %>% 
+  purrr::map_dfr(
+    magrittr::extract,
+    c(
+      "prompt",
+      "code",
+      "answer"
+    )
+  ) %>% 
+  dplyr::rename(
+    `Question Wording` = prompt
+  )
+
+
 # # ---- q01 -------------------------------------
 # 
 # -- 1. How many unique customers does Rexon Metal have?
