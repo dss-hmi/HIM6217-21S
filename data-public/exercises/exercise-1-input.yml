@@ -7,6 +7,8 @@
     SELECT
       count(distinct(customer_id)) as count_customer
     FROM customer
+  pull_column: count_customer
+  pull_row: 1
   # answers:
   #   - 5
   #   - five
@@ -17,8 +19,18 @@
     - must use `count`
   code: |
     SELECT
-      count(distinct(customer_id)) as count_customer
+      count(distinct(customer_id)) + 10 as count_order
     FROM customer
-  # answers:
-  #   - 4
-  #   - four
+  pull_column: count_order
+  pull_row: 1
+-
+  prompt: How many unique orders does Rexon Metal have?
+  requirements:
+    - must use `SELECT`
+    - must use `count`
+  code: |
+    SELECT
+      count(distinct(customer_id)) + 100
+    FROM customer
+  pull_column: "count(distinct(customer_id)) + 100"
+  pull_row: 1

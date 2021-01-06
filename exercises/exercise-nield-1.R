@@ -51,16 +51,17 @@ input <- yaml::read_yaml("data-public/exercises/exercise-1-input.yml")
 output <- input # Start with the same input, and augment it wil the answers.
  
 for(i in seq_along(input)) {
-  sql_solution <- input[[i]]$code
+  y <- input[[i]]
+  sql_solution <- y$code
   
   cnn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = path_db)
   ds_solution <- DBI::dbGetQuery(cnn, sql_solution)
   DBI::dbDisconnect(cnn); rm(cnn, sql_solution)
   
-  output[[i]]$answer <- ds_solution[1,1]
+  output[[i]]$answer <- ds_solution[[y$pull_column]][y$pull_row]
 }
 
-yaml::write_yaml(output, "data-public/exercises/exercise-1-output.yml")
+# yaml::write_yaml(output, "data-public/exercises/exercise-1-output.yml")
 
 
 # solution_value <- ds_solution[1,1]
@@ -77,9 +78,14 @@ output %>%
       "answer"
     )
   ) %>% 
+  dplyr::mutate(
+    code = gsub("\\n", "\\\\n", code), # So the line breaks within the sql are smushed to one line in the csv
+  ) %>% 
   dplyr::rename(
-    `Question Wording` = prompt
-  )
+    `Question Wording`  = prompt,
+    `Choice 1`          = answer
+  ) %>% 
+  readr::write_csv("data-public/exercises/exercise-1-output.csv")
 
 
 # # ---- q01 -------------------------------------
