@@ -8,14 +8,15 @@ cat("Working directory: ", getwd()) # Must be set to Project Directory
 # Project Directory should be the root by default unless overwritten
 
 # ---- load-packages -----------------------------------------------------------
-library(magrittr)  # pipes
-library(dplyr)     # data wrangling
-library(ggplot2)   # graphs
+import::from("magrittr", "%>%")
+# library(magrittr)  # pipes
+# library(dplyr)     # data wrangling
+# library(ggplot2)   # graphs
 library(janitor)   # tidy data
 library(tidyr)     # data wrangling
-library(forcats)   # factors
-library(stringr)   # strings
-library(lubridate) # dates
+# library(forcats)   # factors
+# library(stringr)   # strings
+# library(lubridate) # dates
 
 # ---- load-sources ------------------------------------------------------------
 
@@ -24,33 +25,23 @@ library(lubridate) # dates
 path_db <- "./data-public/textbook/oreilly_getting_started_with_sql/rexon_metals.db"
 
 # ---- load-data ---------------------------------------------------------------
-ds_quiz_template <- readr::read_csv("./quizzes/respondus-csv-column-names.csv")
+# ds_quiz_template <- readr::read_csv("./quizzes/respondus-csv-column-names.csv")
 
-# target_items <- c(
-#   
-# )
-# 
-# 
-# sql_question <- c(
-#   "
-#   -- 1. How many unique customers does Rexon Metal have?
-#   ---- Requirements:
-#   ---- Must use: SELECT, count()
-#   "
-# )
-# 
-sql_solution <- c(
-  "
-  SELECT  count(distinct(customer_id))
-  FROM  customer
-  ;
-  "
-)
-
-input <- yaml::read_yaml("data-public/exercises/exercise-1-input.yml")
-output <- input # Start with the same input, and augment it wil the answers.
+input   <- yaml::read_yaml("data-public/exercises/exercise-1-input.yml")
+output  <- input # Start with the same input, and augment it will the answers.
  
-for(i in seq_along(input)) {
+
+# ---- tweak-data --------------------------------------------------------------
+
+# input[[1]]$requirements %>% 
+#   paste0(., collapse = "\n- ") %>% 
+#   paste0(input[[1]]$prompt, "\nRequirements:\n- ", .) %>% 
+#   cat()
+
+# ---- discover-answers --------------------------------------------------------
+# This kinda breaks the convention.  It usually goes in teh `load-data` chunk.
+
+for (i in seq_along(input)) {
   y <- input[[i]]
   sql_solution <- y$code
   
@@ -63,13 +54,9 @@ for(i in seq_along(input)) {
 
 # yaml::write_yaml(output, "data-public/exercises/exercise-1-output.yml")
 
-
-# solution_value <- ds_solution[1,1]
-
-
 # ---- convert-lists-to-rectangle ----------------------------------------------
-
-output %>% 
+ds_output <-
+  output %>% 
   purrr::map_dfr(
     magrittr::extract,
     c(
@@ -79,27 +66,14 @@ output %>%
     )
   ) %>% 
   dplyr::mutate(
-    code = gsub("\\n", "\\\\n", code), # So the line breaks within the sql are smushed to one line in the csv
+    prompt  = gsub("\\n", "\\\\n", prompt), # So the line breaks within the sql are smushed to one line in the csv
+    code    = gsub("\\n", "\\\\n", code), # So the line breaks within the sql are smushed to one line in the csv
   ) %>% 
   dplyr::rename(
     `Question Wording`  = prompt,
     `Choice 1`          = answer
-  ) %>% 
+  ) 
+
+# ---- save-to-disk ------------------------------------------------------------
+ds_output %>% 
   readr::write_csv("data-public/exercises/exercise-1-output.csv")
-
-
-# # ---- q01 -------------------------------------
-# 
-# -- 1. How many unique customers does Rexon Metal have?
-#   -- Requirements:
-#   -- Must use: SELECT, count()
-# SELECT  count(distinct(customer_id))
-# FROM  customer
-# ;
-# 
-# 
-# # ---- tweak-data --------------------------------------------------------------
-# 
-# 
-# # ---- table-1 -----------------------------------------------------------------
-# 

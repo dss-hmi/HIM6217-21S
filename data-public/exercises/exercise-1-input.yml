@@ -1,6 +1,7 @@
 -
-  prompt: How many unique customers does Rexon Metal have?
-  requirements:
+  prompt: |
+    How many unique customers does Rexon Metal have?
+    Requirements:
     - must use `SELECT`
     - must use `count`
   code: |
@@ -9,14 +10,8 @@
     FROM customer
   pull_column: count_customer
   pull_row: 1
-  # answers:
-  #   - 5
-  #   - five
 -
   prompt: How many unique orders does Rexon Metal have?
-  requirements:
-    - must use `SELECT`
-    - must use `count`
   code: |
     SELECT
       count(distinct(customer_id)) + 10 as count_order
@@ -25,9 +20,6 @@
   pull_row: 1
 -
   prompt: How many unique orders does Rexon Metal have?
-  requirements:
-    - must use `SELECT`
-    - must use `count`
   code: |
     SELECT
       count(distinct(customer_id)) + 100
