@@ -1,28 +1,31 @@
--
-  prompt: |
-    How many unique customers does Rexon Metal have?
-    Requirements:
-    - must use `SELECT`
-    - must use `count`
-  code: |
-    SELECT
-      count(distinct(customer_id)) as count_customer
-    FROM customer
-  pull_column: count_customer
-  pull_row: 1
--
-  prompt: How many unique orders does Rexon Metal have?
-  code: |
-    SELECT
-      count(distinct(customer_id)) + 10 as count_order
-    FROM customer
-  pull_column: count_order
-  pull_row: 1
--
-  prompt: How many unique orders does Rexon Metal have?
-  code: |
-    SELECT
-      count(distinct(customer_id)) + 100
-    FROM customer
-  pull_column: "count(distinct(customer_id)) + 100"
-  pull_row: 1
+path_db               : "data-public/textbook/oreilly_getting_started_with_sql/rexon_metals.db"
+
+items:
+  -
+    prompt: |
+      How many unique customers does Rexon Metal have?
+      Requirements:
+      - must use `SELECT`
+      - must use `count`
+    code: |
+      SELECT
+        count(distinct(customer_id)) as count_customer
+      FROM customer
+    pull_column: count_customer
+    pull_row: 1
+  -
+    prompt: How many unique orders does Rexon Metal have?
+    code: |
+      SELECT
+        count(distinct(customer_id)) + 10 as count_order
+      FROM customer
+    pull_column: count_order
+    pull_row: 1
+  -
+    prompt: How many unique orders does Rexon Metal have?
+    code: |
+      SELECT
+        count(distinct(customer_id)) + 100
+      FROM customer
+    pull_column: "count(distinct(customer_id)) + 100"
+    pull_row: 1

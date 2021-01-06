@@ -22,7 +22,7 @@ library(tidyr)     # data wrangling
 
 # ---- declare-globals ---------------------------------------------------------
 # Note: when printing to Word or PDF use `neat(output_format =  "pandoc")`
-path_db <- "./data-public/textbook/oreilly_getting_started_with_sql/rexon_metals.db"
+# path_db <- "./data-public/textbook/oreilly_getting_started_with_sql/rexon_metals.db" # Now pulled from the exercise-specific yaml file
 
 # ---- load-data ---------------------------------------------------------------
 # ds_quiz_template <- readr::read_csv("./quizzes/respondus-csv-column-names.csv")
@@ -41,24 +41,27 @@ output  <- input # Start with the same input, and augment it will the answers.
 # ---- discover-answers --------------------------------------------------------
 # This kinda breaks the convention.  It usually goes in teh `load-data` chunk.
 
-for (i in seq_along(input)) {
-  y <- input[[i]]
+for (i in seq_along(input$items)) {
+  y <- input$items[[i]]
   sql_solution <- y$code
   
-  cnn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = path_db)
+  cnn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = input$path_db)
   ds_solution <- DBI::dbGetQuery(cnn, sql_solution)
   DBI::dbDisconnect(cnn); rm(cnn, sql_solution)
   
-  output[[i]]$answer <- ds_solution[[y$pull_column]][y$pull_row]
+  output$items[[i]]$answer <- ds_solution[[y$pull_column]][y$pull_row]
 }
 
-# yaml::write_yaml(output, "data-public/exercises/exercise-1-output.yml")
+# input %>% 
+#   purrr::map_df(tibble::as_tibble)
+
+
 
 # ---- convert-lists-to-rectangle ----------------------------------------------
 ds_output <-
-  output %>% 
+  output$items %>% 
   purrr::map_dfr(
-    magrittr::extract,
+    .f = magrittr::extract,
     c(
       "prompt",
       "code",
@@ -67,7 +70,7 @@ ds_output <-
   ) %>% 
   dplyr::mutate(
     prompt  = gsub("\\n", "\\\\n", prompt), # So the line breaks within the sql are smushed to one line in the csv
-    code    = gsub("\\n", "\\\\n", code), # So the line breaks within the sql are smushed to one line in the csv
+    code    = gsub("\\n", "\\\\n", code  ), # So the line breaks within the sql are smushed to one line in the csv
   ) %>% 
   dplyr::rename(
     `Question Wording`  = prompt,
@@ -75,5 +78,6 @@ ds_output <-
   ) 
 
 # ---- save-to-disk ------------------------------------------------------------
-ds_output %>% 
-  readr::write_csv("data-public/exercises/exercise-1-output.csv")
+readr::write_csv(ds_output, "data-public/exercises/exercise-1-output.csv")
+
+# yaml::write_yaml(output, "data-public/exercises/exercise-1-output.yml")
