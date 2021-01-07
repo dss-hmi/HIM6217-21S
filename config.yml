@@ -1,6 +1,7 @@
 default:
   # # To be processed by Ellis lanes
   path_subject_1_raw:       "data-public/raw/subject-1.csv"
+  path_quiz_template:       "quizzes/respondus-csv-column-names.csv"
   # path_mlm_1_raw:           "data-public/raw/mlm-1.csv"
   # 
   # path_car_raw:             "data-public/raw/mtcar.csv"
