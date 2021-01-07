@@ -2,13 +2,13 @@
 -- All questions target the table `dx` in the database `synpuf-1`
 
 
--- 1.1 How many records(rows) are in the `dx` table
+--  How many records(rows) are in the `dx` table
 ---- Must use: count()
 SELECT count(*)
 FROM dx
 ;
 
--- 1.1 How many unique patients are in the `dx` table? 
+-- How many unique patients are in the `dx` table? 
 ---- Must use: count()
 ---- Must NOT use: (*)
 ---- Output dimensions: 1x1
@@ -16,7 +16,7 @@ SELECT count(distinct(person_id))
 FROM dx
 ;
 
--- 1.1 How many unique dates are in the `dx` table? 
+-- How many unique dates are in the `dx` table? 
 ---- Must use: count()
 ---- Must NOT use: (*)
 ---- Output dimensions: 1x1
@@ -24,7 +24,7 @@ SELECT count(distinct(dx_date))
 FROM dx
 ;
 
--- 1.1 How many unique ICD9 codes are in the `dx` table? 
+-- How many unique ICD9 codes are in the `dx` table? 
 ---- Must use: count()
 ---- Must NOT use: (*)
 ---- Output dimensions: 1x1
@@ -32,7 +32,7 @@ SELECT count(distinct(icd9_code))
 FROM dx
 ;
 
--- 1.1 What is the difference between the number of unique ICD-9 codes 
+-- What is the difference between the number of unique ICD-9 codes 
 -- and the number of unique ICD-9 descriptions?
 -- Requirements:
 ---- Must use: count(), distinct(), AS
