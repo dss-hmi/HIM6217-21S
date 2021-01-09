@@ -1,5 +1,5 @@
 -- Exercise 1
--- All questions target the table `patient` in the database `./data-public/exercises/synpuf-1.sqlite3`
+-- All questions target the table `patient` in the database `./data-public/exercises/synpuf_1.sqlite3`
 -- Please use SQLiteStudio to develop and test the queries.
 
 
@@ -70,7 +70,7 @@
 ---- MUST use: count(), WHERE, != 
 ---- Output dimensions: 1x1
 
--- How many patients were born before 1936? 
+-- How many patients were born before 1946? 
 -- Requirements:
 ---- Must use: count(), WHERE
 ---- Output dimensions: 1x1
@@ -82,7 +82,7 @@
 ---- Output dimensions: 1x1
 
 
--- How many non-white females were born prior to 1925?
+-- How many non-white females were born prior to 1945?
 -- Requirements:
 ---- Must use: count(), WHERE
 ---- Output dimensions: 1x1
