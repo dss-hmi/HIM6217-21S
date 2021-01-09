@@ -1,4 +1,4 @@
-Question Wording,code,Choice 1
+Question Wording,General Comment,Choice 1
 How many unique customers does Rexon Metal have?\nRequirements:\n- must use `SELECT`\n- must use `count`\n,SELECT\n  count(distinct(customer_id)) as count_customer\nFROM customer\n,5
 How many unique orders does Rexon Metal have?,SELECT\n  count(distinct(customer_id)) + 10 as count_order\nFROM customer\n,15
 How many unique orders does Rexon Metal have?,SELECT\n  count(distinct(customer_id)) + 100\nFROM customer\n,105
