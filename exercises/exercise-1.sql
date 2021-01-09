@@ -1,5 +1,5 @@
 -- Exercise 1
--- All questions target the table `patient` in the database `synpuf-1`
+-- All questions target the table `patient` in the database `synpuf_1`
 
 
 -- How many rows are in the `patient` table
@@ -112,7 +112,7 @@ WHERE (gender = 'male') AND (race != 'white')
 ---- Output dimensions: 1x1
 SELECT count(*)
 FROM patient
-WHERE dob < '1936-01-01'
+WHERE dob < '1946-01-01'
 ;
 
 -- How many patients were born between 1930 and 1940 ? 
@@ -124,7 +124,7 @@ FROM patient
 where dob BETWEEN '1930-01-01' AND '1939-12-31'
 ;
 
--- . How many non-white females were born prior to 1925?
+-- . How many non-white females were born prior to 1945?
 -- Requirements:
 ---- Must use: count(), WHERE
 ---- Output dimensions: 1x1
@@ -133,10 +133,10 @@ FROM patient
 WHERE
   (gender = 'female' AND race != 'white')
   &
-  (dob < '1925-01-01')
+  (dob < '1945-01-01')
 ;
   
--- . How many white males were born after 1925?
+-- . How many white males were born after 1935?
 -- Requirements:
 ---- Must use: count(), GROUP BY, AS
 ---- Must NOT use: WHERE
