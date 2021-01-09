@@ -15,7 +15,5 @@ SELECT
 FROM v5_2.condition_occurrence      as dx
   left  join v5_2.concept as cdx on dx.condition_source_concept_id = cdx.concept_id
 WHERE
-  person_id between 1 and 50
-  and
   not dx.condition_occurrence_id in (5413)
 ORDER BY person_id, dx_date
