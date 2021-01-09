@@ -136,7 +136,7 @@ WHERE
   (dob < '1945-01-01')
 ;
   
--- . How many white males were born after 1935?
+-- . How many white males were born after 1925?
 -- Requirements:
 ---- Must use: count(), GROUP BY, AS
 ---- Must NOT use: WHERE
