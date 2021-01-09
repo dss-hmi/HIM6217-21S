@@ -1,0 +1,27 @@
+path_db               : "data-public/textbook/oreilly_getting_started_with_sql/rexon_metals.db"
+
+items:
+  -
+    prompt: |
+      How many unique customers does Rexon Metal have?
+      Requirements:
+      - MUST use SELECT, count
+    code: |
+      SELECT
+        count(distinct(customer_id)) as count_customer
+      FROM customer
+    pull_column: count_customer
+    pull_row: 1
+  -
+    prompt: |
+      On what date the order with the highest quantity was shipped?
+      Requirements:
+      - MUST use: SELECT, MAX(), AS
+    code: |
+      SELECT ship_date, MAX(order_qty) AS max_qty
+      FROM customer_order
+      ;
+    pull_column: SHIP_DATE
+    pull_row: 1
+
+

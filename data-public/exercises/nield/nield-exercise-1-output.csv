@@ -1,0 +1,9 @@
+Type,Title/ID,Points,Question Wording,Correct Answer,Choice 1,Choice 2,Choice 3,Choice 4,Choice 5,Choice 6,Choice 7,Choice 8,Choice 9,Choice 10,General Feedback,Correct Feedback,Incorrect Feedback,Feedback 1,Feedback 2,Feedback 3,Feedback 4,Feedback 5,Feedback 6,Feedback 7,Feedback 8,Feedback 9,Feedback 10,Topic,Difficulty Level,Meta 1,Meta 2,Meta 3,Meta 4
+FB,Nield-Exercise-01-001,5,"How many unique customers does Rexon Metal have?
+Requirements:
+- MUST use SELECT, count
+",,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,Nield-Exercise-01-002,5,"On what date the order with the highest quantity was shipped?
+Requirements:
+- MUST use: SELECT, MAX(), AS
+",,2015-05-21,,,,,,,,,,,,,,,,,,,,,,,,,,,,

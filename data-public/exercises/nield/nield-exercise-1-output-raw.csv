@@ -1,0 +1,9 @@
+Question Wording,Choice 1,Title/ID
+"How many unique customers does Rexon Metal have?
+Requirements:
+- MUST use SELECT, count
+",5,Nield-Exercise-01-001
+"On what date the order with the highest quantity was shipped?
+Requirements:
+- MUST use: SELECT, MAX(), AS
+",2015-05-21,Nield-Exercise-01-002
