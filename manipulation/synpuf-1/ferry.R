@@ -21,10 +21,36 @@ requireNamespace("OuhscMunge"                 )  # remotes::install_github("Ouhs
 # Constant values that won't change.
 # config      <- config::get()
 dsn                   <- "omop_synpuf"
-path_db_1             <- "data-public/exercises/synpuf-1.sqlite3"
-path_sql_pt           <- "manipulation/synpuf-1/pt.sql"
-path_sql_dx           <- "manipulation/synpuf-1/dx.sql"
+path_db_1             <- "data-public/exercises/synpuf/synpuf_1.sqlite3"
+path_sql_pt           <- "manipulation/synpuf/pt.sql"
+path_sql_dx           <- "manipulation/synpuf/dx.sql"
 
+# ---- local-functions ---------------------------------------------------------
+get_a_sample <- function(
+  d,
+  varname            # unique of these
+  ,sample_size
+  ,show_all = FALSE
+){
+  # d <- ds_pt
+  # varname = "person_id"
+  # varname = "offense_arrest_cd"
+  sample_pool <- d %>% 
+    dplyr::distinct_(.dots = varname) %>% 
+    na.omit() %>% 
+    as.list() %>% unlist() %>% as.vector() 
+  if(show_all){ sample_size = length(sample_pool)}
+  selected_sample <- sample_pool %>% sample(size = sample_size, replace = FALSE)
+  
+  return(selected_sample)
+}  
+# How to use
+# ds %>% get_a_sample("person_id",  5)
+# ds %>% get_a_sample("offense_arrest_cd",  5, show_all = T) 
+# set.seed(42)
+# target_sample <- ds %>% 
+#   dplyr::filter(n_offenses > 1L) %>% 
+#   get_a_sample("person_id", 500)
 # ---- load-data ---------------------------------------------------------------
 ds_pt <- OuhscMunge::execute_sql_file(path_sql_pt, dsn, execute = F)
 ds_dx <- OuhscMunge::execute_sql_file(path_sql_dx, dsn, execute = F)
@@ -34,13 +60,24 @@ checkmate::assert_data_frame(ds_dx, min.rows = 10)
 rm(path_sql_pt, path_sql_dx)
 
 # ---- tweak-data --------------------------------------------------------------
+set.seed(TeachingDemos::char2seed(x = "synpuf-1-1", set = TRUE))
+sample_size <- 30
+sample_1 <- ds_pt %>% get_a_sample("person_id",sample_size)
+sample_1
+
+set.seed(TeachingDemos::char2seed(x = "synpuf-1-2", set = TRUE))
+sample_size <- 10
+sample_2 <- ds_pt %>% get_a_sample("person_id",sample_size)
+sample_2
+
+
 ds_pt <- 
   ds_pt %>% 
   tibble::as_tibble() %>%
   dplyr::mutate(
     dob                 = strftime(dob, "%Y-%m-%d"),
-  ) #%>% 
-  # dplyr::filter(person_id %in% 1:36)
+  ) %>% 
+  dplyr::filter(person_id %in% sample_1)
 
 ds_dx <- 
   ds_dx %>% 
@@ -48,7 +85,8 @@ ds_dx <-
   dplyr::mutate(
     dx_date             = strftime(dx_date, "%Y-%m-%d"),
     icd9_description    = OuhscMunge::deterge_to_ascii(icd9_description)
-  )
+  )%>% 
+  dplyr::filter(person_id %in% c(sample_1,sample_2))
 
 # ---- verify-values -----------------------------------------------------------
 # OuhscMunge::verify_value_headstart(ds_dx)
@@ -107,7 +145,7 @@ cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db_1)
 DBI::dbListTables(cnn)
 
 # Create tables
-sql_create[1:4] %>%
+sql_create[1:length(sql_create)] %>%
   purrr::walk(~DBI::dbExecute(cnn, .))
 
 DBI::dbListTables(cnn)
