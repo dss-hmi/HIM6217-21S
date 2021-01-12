@@ -1,18 +1,17 @@
-path_db               : "data-public/exercises/synpuf/synpuf_1.db"
-
+path_db               : "data-public/exercises/synpuf/synpuf_1.sqlite3"
 items:
   -
     prompt: |
       1) How many rows are in the `patient` table?
       Requirements:
       Must use: count()
-     Output dimensions: 1x1
+      Output dimensions: 1x1
     code: |
       SELECT count(*)
       FROM patient
       ;
     pull_column: "count(*)"
-    pull_row: 1
+    pull_row: 1  
   -
     prompt: |
       2) How many unique patients are in the `patient` table? 
@@ -25,10 +24,22 @@ items:
       ;
     pull_column: "count(distinct(person_id))"
     pull_row: 1
-
   -
     prompt: |
-      3) How many women are in the patient table? 
+     3) How many men are in the patient table?
+     Requirements:
+     Must use: count(), WHERE
+     Output dimensions: 1x1
+    code: |
+     SELECT count(*) 
+     FROM patient
+     WHERE gender = 'male'
+     ;
+    pull_column: "count(*)"
+    pull_row: 1
+  -
+    prompt: |
+      4) How many women are in the patient table? 
       Requirements:
       Must use: count(), WHERE
       name the calculated field 'n_women'
@@ -40,11 +51,9 @@ items:
       ;
     pull_column: n_women
     pull_row: 1
-
-
-  -
+  -  
     prompt: |
-      4) What value of gender is more prevalent in the patient table?
+      5) What value of gender is more prevalent in the patient table?
       Requirements:
       Must use: count(), GROUP BY, ORDER BY
       Must NOT use: WHERE
@@ -57,12 +66,11 @@ items:
       GROUP BY gender
       ORDER BY n_patients desc
       ;
-    pull_column: n_patients
+    pull_column: gender
     pull_row: 1
-
-      -
+  -
     prompt: |
-      5) How many race categories are present in the patient table?
+      6) How many race categories are present in the patient table?
       Requirements:
       Must use: count(), distinct()
       Output dimensions: 1x1
@@ -72,10 +80,9 @@ items:
       ;
     pull_column: n_race
     pull_row: 1
-
-      -
+  -
     prompt: |
-      6) How many patients are in the largest race category?
+      7) How many patients are in the largest race category?
       Requirements:
       Must use: distinct(), count(), GROUP BY, ORDER BY, LIMIT
       Must NOT use: AS
@@ -89,10 +96,9 @@ items:
       ;
     pull_column: "count(*)"
     pull_row: 1
-
-      -
+  -
     prompt: |
-      7) How many patients are in the smallest ethnicity category?
+      8) How many patients are in the smallest ethnicity category?
       Requirements:
       Must use: distinct(), count(), GROUP BY, ORDER BY, LIMIT
       calculated field must be named 'n_patients'
@@ -107,10 +113,9 @@ items:
       ;
     pull_column: n_patients
     pull_row: 1
-
-      -
+  -
     prompt: |
-      8) How many white females are in the patient table? 
+      9) How many white females are in the patient table? 
       Requirements: 
       MUST use: count(), WHERE 
       calculated field must be named `n_patients`
@@ -123,10 +128,9 @@ items:
       ;
     pull_column: n_patients
     pull_row: 1
-
-      -
+  -
     prompt: |
-      9) How many non-white males are in the patient table?
+      10) How many non-white males are in the patient table?
       Requirements: 
       MUST use: count(), WHERE, != 
       Output dimensions: 1x1
@@ -137,10 +141,9 @@ items:
       ;
     pull_column: "count(*)"
     pull_row: 1
-
-      -
+  -
     prompt: |
-      10) How many patients were born before 1936? 
+      11) How many patients were born before 1936? 
       Requirements:
       Must use: count(), WHERE
       Output dimensions: 1x1
@@ -151,10 +154,9 @@ items:
       ;
     pull_column: "count(*)"
     pull_row: 1
-
-      -
+  -
     prompt: |
-      11) How many patients were born between 1930 and 1940 ? 
+      12) How many patients were born between 1930 and 1940 ? 
       Requirements:
       Must use: count(), WHERE, BETWEEN
       Output dimensions: 1x1
@@ -165,11 +167,9 @@ items:
       ;
     pull_column:  "count(*)"
     pull_row: 1
-
-
-      -
+  -
     prompt: |
-      12) How many non-white females were born prior to 1945?
+      13) How many non-white females were born prior to 1945?
       Requirements:
       Must use: count(), WHERE
       Output dimensions: 1x1
@@ -183,11 +183,9 @@ items:
       ;
     pull_column: "count(*)"
     pull_row: 1
-
-    
-      -
+  -
     prompt: |
-      13) How many white males were born after 1925?
+      14) How many white males were born after 1925?
       Requirements:
       Must use: count(), GROUP BY, AS
       Must NOT use: WHERE
