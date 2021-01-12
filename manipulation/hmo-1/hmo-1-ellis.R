@@ -18,8 +18,6 @@ library(dplyr)
 
 # ---- declare-globals ---------------------------------------------------------
 # Constant values that won't change.
-
-path_source_xlsx <- "data-public/raw/hmo-1/hmo-1.xlsx"
 path_db  <- "data-public/derived/hmo-1-db.sqlite3"
 
 path_patients <- "./data-public/raw/hmo-1/hmo-1-patients.csv"
@@ -50,46 +48,56 @@ rm(col_types_patients,col_types_visits)
 
 # ---- tweak-data --------------------------------------------------------------
 # OuhscMunge::column_rename_headstart(ds) # Help write `dplyr::select()` call.
-ds <-
-  ds %>%
-  dplyr::select(    # `dplyr::select()` drops columns not included.
-    county_id,
-    county_name,
-    category,
-    time_zone         = `timezone`,
-    desired,
-  ) %>%
-  dplyr::filter(desired) %>%
-  dplyr::mutate(
+OuhscMunge::column_rename_headstart(ds_patients)
+OuhscMunge::column_rename_headstart(ds_visits)
 
-  ) # %>%
   # dplyr::arrange(subject_id) # %>%
   # tibble::rowid_to_column("subject_id") # Add a unique index if necessary
+ds_patients <- 
+  ds_patients %>% 
+  dplyr::select(    # `dplyr::select()` drops columns not included.
+    patient_id               ,
+    name_first               ,
+    name_last                ,
+    sex                      ,
+    dob                      ,
+  )
+ds_visits <- 
+  ds_visits %>% 
+  dplyr::select(    # `dplyr::select()` drops columns not included.
+    visit_id                 ,
+    patient_id               ,
+    visit_date               ,
+  )
 
 # ---- verify-values -----------------------------------------------------------
-# OuhscMunge::verify_value_headstart(ds)
-checkmate::assert_integer(  ds$county_id   , any.missing=F , lower=51, upper=72 , unique=T)
-checkmate::assert_character(ds$county_name , any.missing=F , pattern="^.{5,25}$", unique=T)
-checkmate::assert_character(ds$category    , any.missing=F , pattern="^.{5,10}$" )
-checkmate::assert_character(ds$time_zone   , any.missing=F , pattern="^.{5,25}$" )
-checkmate::assert_logical(  ds$desired     , any.missing=F                       )
+
 
 # ---- specify-columns-to-upload -----------------------------------------------
 # Print colnames that `dplyr::select()`  should contain below:
-#   cat(paste0("    ", colnames(ds), collapse=",\n"))
+#   cat(paste0("    ", colnames(ds_patients), collapse=",\n"))
 
 # Define the subset of columns that will be needed in the analyses.
 #   The fewer columns that are exported, the fewer things that can break downstream.
 
-ds_slim <-
-  ds %>%
-  # dplyr::slice(1:100) %>%
+ds_patients_slim <- 
+  ds_patients %>% 
+  # dplyr::slice(1:100) %>% 
   dplyr::select(
-    county_id,
-    county_name,
-    category,
-    time_zone,
-    # desired
+    patient_id
+    ,name_first
+    ,name_last
+    ,sex
+    ,dob
+  )
+
+ds_visits_slim <- 
+  ds_visits %>% 
+  # dplyr::slice(1:100) %>% 
+  dplyr::select(
+    visit_id
+    ,patient_id
+    ,visit_date
   )
 
 
@@ -112,14 +120,28 @@ ds_slim <-
 # cat(dput(colnames(ds)), sep = "\n")
 sql_create <- c(
   "
-    DROP TABLE IF EXISTS dim_county;
-  ",
+    DROP TABLE if exists patient;
   "
-    CREATE TABLE `dim_county` (
-      county_id               int         not null primary key,
-      county_name             varchar(25) not null,
-      category                varchar(10) not null,
-      time_zone               varchar(25) not null
+  ,
+  "
+    CREATE TABLE patient (
+        patient_id   INTEGER      PRIMARY KEY,
+        name_first   VARCHAR (25)            ,
+        name_last    VARCHAR (25)            ,
+        sex          VARCHAR (1)             ,
+        dob          DATE
+    );
+  "
+  ,
+  "
+    DROP TABLE if exists visit;
+  "
+  ,
+  "
+    CREATE TABLE visit (
+      visit_id      INTEGER   primary key,
+      patient_id    INTEGER   not null,
+      visit_date    DATE      not null
     );
   "
 )
@@ -139,7 +161,8 @@ sql_create %>%
 DBI::dbListTables(cnn)
 
 # Write to database
-DBI::dbWriteTable(cnn, name='dim_county',            value=ds_slim,        append=TRUE, row.names=FALSE)
+DBI::dbWriteTable(cnn, name='patient', value=ds_patients_slim, append=TRUE, row.names=FALSE)
+DBI::dbWriteTable(cnn, name='visit',   value=ds_visits_slim,    append=TRUE, row.names=FALSE)
 
 # Close connection
 DBI::dbDisconnect(cnn)
