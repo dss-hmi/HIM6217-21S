@@ -180,11 +180,11 @@ sql_create_movies <- c(
   ",
   "
     CREATE TABLE `Movies` (
-      Id               INT           not null primary key  ,
-      Title            VARCHAR(64)                         ,
-      Director         VARCHAR(64)                         ,
-      Year             INT                                 ,
-      Length_minutes   INT                                 
+      Id               int           primary key  ,
+      Title            varchar(64),
+      Director         varchar(64),
+      Year             int,
+      Length_minutes   int                                 
     );
   "
   ,
@@ -193,10 +193,10 @@ sql_create_movies <- c(
   ",
   "
     CREATE TABLE `Boxoffice` (
-      Movie_id              INT        not null primary key,            
-      Rating                INT                            ,          
-      Domestic_sales        INT                            ,                  
-      International_sales   INT                                                   
+      Movie_id              int       primary key,            
+      Rating                int,          
+      Domestic_sales        int,                  
+      International_sales   int                                                   
     );
   "
 )
@@ -206,9 +206,9 @@ sql_create_buildings <- c(
   ",
   "
     CREATE TABLE `Employees` (
-      Role                  varchar(64)
-      Name                  varchar(64) not null primary key
-      Building              varchar(8)
+      Role                  varchar(64),
+      Name                  varchar(64)   primary key,
+      Building              varchar(2),
       Years_employed        int
     );
   "
@@ -217,9 +217,8 @@ sql_create_buildings <- c(
   ",
   "
     CREATE TABLE `Buildings` (
-      Building_name               int         not null primary key,
-      Capacity             INT not null,
-
+      Building_name         varchar(2)  primary key,
+      Capacity              int         not null
     );
   "
 
@@ -255,7 +254,7 @@ DBI::dbClearResult(result)
 DBI::dbListTables(cnn)
 
 # Create tables
-path_db_buildings %>%
+sql_create_buildings %>%
   purrr::walk(~DBI::dbExecute(cnn, .))
 DBI::dbListTables(cnn)
 
