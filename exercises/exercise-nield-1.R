@@ -74,7 +74,8 @@ ds_output <-
   ) %>% 
   dplyr::rename(
     `Question Wording`  = prompt,
-    `Choice 1`          = answer
+    `Choice 1`          = answer,
+    `General Comment`   = code
   ) 
 
 # ---- save-to-disk ------------------------------------------------------------
