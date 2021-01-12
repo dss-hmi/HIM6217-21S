@@ -21,17 +21,20 @@ requireNamespace("OuhscMunge"                 )  # remotes::install_github("Ouhs
 # Constant values that won't change.
 # config      <- config::get()
 dsn                   <- "omop_synpuf"
-path_db_1             <- "data-public/exercises/synpuf-1.sqlite3"
-path_sql_pt           <- "manipulation/synpuf-1/pt.sql"
-path_sql_dx           <- "manipulation/synpuf-1/dx.sql"
+path_db_1             <- "data-public/exercises/synpuf_2.sqlite3"
+path_sql_pt           <- "manipulation/synpuf-2/pt.sql"
+path_sql_dx           <- "manipulation/synpuf-2/dx.sql"
+path_sql_vt           <- "manipulation/synpuf-2/visit.sql"
 
 # ---- load-data ---------------------------------------------------------------
 ds_pt <- OuhscMunge::execute_sql_file(path_sql_pt, dsn, execute = F)
 ds_dx <- OuhscMunge::execute_sql_file(path_sql_dx, dsn, execute = F)
+ds_vt <- OuhscMunge::execute_sql_file(path_sql_vt, dsn, execute = F)
 
 checkmate::assert_data_frame(ds_pt, min.rows = 10)
 checkmate::assert_data_frame(ds_dx, min.rows = 10)
-rm(path_sql_pt, path_sql_dx)
+checkmate::assert_data_frame(ds_vt, min.rows = 10)
+rm(path_sql_pt, path_sql_dx, path_sql_vt)
 
 # ---- tweak-data --------------------------------------------------------------
 ds_pt <- 
@@ -93,6 +96,16 @@ sql_create <- c(
       icd9_code        varchar(10)   not null,
       icd9_description varchar(10)   not null,
       inpatient_visit  varchar(255)  not null
+    );
+  ",
+  "
+    CREATE TABLE `vt` (
+      visit_id            integer       primary key,
+      person_id           integer       not null,
+      visit_category      varchar(255)  not null,
+      visit_date          date          not null,
+      provider_id         integer       not null,
+      care_site_id        integer       not null,
     );
   "
 )
