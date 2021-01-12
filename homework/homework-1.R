@@ -28,17 +28,21 @@ library(tidyr)     # data wrangling
 config <- config::get()
 ds_quiz_template <- readr::read_csv(config$path_quiz_template)
 
-input   <- yaml::read_yaml("data-public/exercises/nield/nield-exercise-1-input.yml")
+input   <- yaml::read_yaml("data-public/exercises/homework/homework-1-input.yml")
 output  <- input # Start with the same input, and augment it will the answers.
  
 
 # ---- tweak-data --------------------------------------------------------------
-quiz_value_total<- 10 
-quiz_source <- "Nield"
-quiz_type   <- "Exercise"
+quiz_value_total<- 60 
+quiz_source <- "synpuf"
+quiz_type   <- "homework"
 quiz_number <- "01"
 item_title_stem <- paste0(quiz_source,"-", quiz_type,"-", quiz_number)
 
+path_stem <-  "data-public/exercises/"
+path_raw <-  "data-public/exercises/nield/nield-exercise-1-output-raw.csv"
+path_output_raw <-  paste0(path_stem,quiz_type,"/",quiz_type,"-",quiz_number,"-output-raw.csv")
+path_output     <-  paste0(path_stem,quiz_type,"/",quiz_type,"-",quiz_number,"-output.csv")
 # input[[1]]$requirements %>% 
 #   paste0(., collapse = "\n- ") %>% 
 #   paste0(input[[1]]$prompt, "\nRequirements:\n- ", .) %>% 
@@ -61,14 +65,14 @@ for (i in seq_along(input$items)) {
 # input %>% 
 #   purrr::map_df(tibble::as_tibble)
 
-# for debugging : 
-# y <- input$items[[2]]
-# sql_solution <- y$code
-# cnn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = input$path_db)
-# ds_solution <- DBI::dbGetQuery(cnn, sql_solution)
-# DBI::dbDisconnect(cnn); rm(cnn, sql_solution)
-# 
-# output$items[[i]]$answer <- ds_solution[[y$pull_column]][y$pull_row] %>% as.character()
+# for debugging :
+y <- input$items[[14]]
+sql_solution <- y$code
+cnn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = input$path_db)
+ds_solution <- DBI::dbGetQuery(cnn, sql_solution)
+DBI::dbDisconnect(cnn); rm(cnn, sql_solution)
+
+output$items[[i]]$answer <- ds_solution[[y$pull_column]][y$pull_row] %>% as.character()
 
 
 # ---- convert-lists-to-rectangle ----------------------------------------------
@@ -96,7 +100,6 @@ ds_output_raw <-
   select(-code, -qn) # for now, correct code will not be provided
 
 
-quiz_value_total<- 10 
 quiz_value_item <- (quiz_value_total/nrow(ds_output_raw)) %>% as.character()
 ds_output <- 
   bind_rows(
@@ -114,7 +117,7 @@ ds_output <-
 
 
 # ---- save-to-disk ------------------------------------------------------------
-ds_output_raw %>% readr::write_csv( "data-public/exercises/nield/nield-exercise-1-output-raw.csv")
-ds_output %>% readr::write_csv( "data-public/exercises/nield/nield-exercise-1-output.csv")
+ds_output_raw %>% readr::write_csv( path_output_raw)
+ds_output %>% readr::write_csv( path_output)
 
 # yaml::write_yaml(output, "data-public/exercises/exercise-1-output.yml")
