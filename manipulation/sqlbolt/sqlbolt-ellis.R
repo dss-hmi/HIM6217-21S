@@ -20,7 +20,7 @@ library(dplyr)
 # Constant values that won't change.
 
 path_db_movies     <- "data-public/derived/sqlbolt-movies-db.sqlite3"
-path_db_employees  <- "data-public/derived/sqlbolt-employees-db.sqlite3"
+path_db_buildings  <- "data-public/derived/sqlbolt-buildings-db.sqlite3"
 
 path_movies    <- "./data-public/raw/sqlbolt/movies.csv"
 path_boxoffice <- "./data-public/raw/sqlbolt/boxoffice.csv"
@@ -56,9 +56,9 @@ col_types_buildings <-
 col_types_employees <- 
   readr::cols_only(
     `Role`             = readr::col_character(),
-    `Name`               = readr::col_character(),
-    `Building`       = readr::col_character(),
-    `Years_employed`  = readr::col_integer()
+    `Name`             = readr::col_character(),
+    `Building`         = readr::col_character(),
+    `Years_employed`   = readr::col_integer()
   )
 
 
@@ -77,47 +77,81 @@ rm(col_types_movies,col_types_boxoffice,col_types_buildings,col_types_employees)
 
 # ---- tweak-data --------------------------------------------------------------
 # OuhscMunge::column_rename_headstart(ds) # Help write `dplyr::select()` call.
-ds <-
-  ds %>%
-  dplyr::select(    # `dplyr::select()` drops columns not included.
-    county_id,
-    county_name,
-    category,
-    time_zone         = `timezone`,
-    desired,
-  ) %>%
-  dplyr::filter(desired) %>%
-  dplyr::mutate(
-
-  ) # %>%
-  # dplyr::arrange(subject_id) # %>%
-  # tibble::rowid_to_column("subject_id") # Add a unique index if necessary
-
+# OuhscMunge::column_rename_headstart(ds_movies) # Help write `dplyr::select()` call.
+# OuhscMunge::column_rename_headstart(ds_boxoffice) # Help write `dplyr::select()` call.
+# OuhscMunge::column_rename_headstart(ds_buildings) # Help write `dplyr::select()` call.
+# OuhscMunge::column_rename_headstart(ds_employees) # Help write `dplyr::select()` call.
+# ds_movies <-
+#   ds_movies %>%
+#   dplyr::select(    # `dplyr::select()` drops columns not included.
+#     id                            = `Id`,
+#     title                         = `Title`,
+#     director                      = `Director`,
+#     year                          = `Year`,
+#     length_minutes                = `Length_minutes`,
+#   )
+# ds_boxoffice <-
+#   ds_boxoffice %>%
+#   dplyr::select(    # `dplyr::select()` drops columns not included.
+#     movie_id                           = `Movie_id`,
+#     rating                             = `Rating`,
+#     domestic_sales                     = `Domestic_sales`,
+#     international_sales                = `International_sales`,
+#   )
+# ds_buildings <-
+#   ds_buildings %>%
+#   dplyr::select(    # `dplyr::select()` drops columns not included.
+#     building_name                = `Building_name`,
+#     capacity                     = `Capacity`,
+#   )
+# ds_employees <-
+#   ds_employees %>%
+#   dplyr::select(    # `dplyr::select()` drops columns not included.
+#     role                          = `Role`,
+#     name                          = `Name`,
+#     building                      = `Building`,
+#     years_employed                = `Years_employed`,
+#   )
 # ---- verify-values -----------------------------------------------------------
-# OuhscMunge::verify_value_headstart(ds)
-checkmate::assert_integer(  ds$county_id   , any.missing=F , lower=51, upper=72 , unique=T)
-checkmate::assert_character(ds$county_name , any.missing=F , pattern="^.{5,25}$", unique=T)
-checkmate::assert_character(ds$category    , any.missing=F , pattern="^.{5,10}$" )
-checkmate::assert_character(ds$time_zone   , any.missing=F , pattern="^.{5,25}$" )
-checkmate::assert_logical(  ds$desired     , any.missing=F                       )
+# OuhscMunge::verify_value_headstart(ds_movies)
+# OuhscMunge::verify_value_headstart(ds_boxoffice)
+# OuhscMunge::verify_value_headstart(ds_buildings)
+# OuhscMunge::verify_value_headstart(ds_employees)
+
+# checkmate::assert_integer(  ds_movies$id                 , any.missing=F , lower=1, upper=14      , unique=T)
+# checkmate::assert_character(ds_movies$title              , any.missing=F , pattern="^.{2,19}$"    , unique=T)
+# checkmate::assert_character(ds_movies$director           , any.missing=F , pattern="^.{9,14}$"    )
+# checkmate::assert_integer(  ds_movies$year               , any.missing=F , lower=1995, upper=2013 , unique=T)
+# checkmate::assert_integer(  ds_movies$length_minutes     , any.missing=F , lower=81, upper=120    , unique=T)
+# 
+# checkmate::assert_integer( ds_boxoffice$movie_id            , any.missing=F , lower=1, upper=14                , unique=T)
+# checkmate::assert_numeric( ds_boxoffice$rating              , any.missing=F , lower=6, upper=9                 )
+# checkmate::assert_integer( ds_boxoffice$domestic_sales      , any.missing=F , lower=162798565, upper=415004880 , unique=T)
+# checkmate::assert_integer( ds_boxoffice$international_sales , any.missing=F , lower=170162503, upper=648167031 , unique=T)
+# 
+# checkmate::assert_character(ds_buildings$building_name      , any.missing=F , pattern="^.{2,2}$" , unique=T)
+# checkmate::assert_integer(  ds_buildings$capacity           , any.missing=F , lower=16, upper=32 , unique=T)
+# 
+# checkmate::assert_character(ds_employees$role               , any.missing=F , pattern="^.{6,8}$"  )
+# checkmate::assert_character(ds_employees$name               , any.missing=F , pattern="^.{6,10}$" , unique=T)
+# checkmate::assert_character(ds_employees$building           , any.missing=T , pattern="^.{2,2}$"  )
+# checkmate::assert_integer(  ds_employees$years_employed     , any.missing=F , lower=0, upper=9    )
+
 
 # ---- specify-columns-to-upload -----------------------------------------------
 # Print colnames that `dplyr::select()`  should contain below:
-#   cat(paste0("    ", colnames(ds), collapse=",\n"))
+  # cat(paste0("    ", colnames(ds_movies), collapse=",\n"))
+  # cat(paste0("    ", colnames(ds_boxoffice), collapse=",\n"))
+  # cat(paste0("    ", colnames(ds_buildings), collapse=",\n"))
+  # cat(paste0("    ", colnames(ds_employees), collapse=",\n"))
 
 # Define the subset of columns that will be needed in the analyses.
 #   The fewer columns that are exported, the fewer things that can break downstream.
 
-ds_slim <-
-  ds %>%
-  # dplyr::slice(1:100) %>%
-  dplyr::select(
-    county_id,
-    county_name,
-    category,
-    time_zone,
-    # desired
-  )
+ds_movies_slim    <- ds_movies
+ds_boxoffice_slim <- ds_boxoffice
+ds_buildings_slim <- ds_buildings
+ds_employees_slim <- ds_employees
 
 
 # ---- save-to-db --------------------------------------------------------------
@@ -136,37 +170,98 @@ ds_slim <-
 # If there's no PHI, a local database like SQLite fits a nice niche if
 #   * the data is relational and
 #   * later, only portions need to be queried/retrieved at a time (b/c everything won't need to be loaded into R's memory)
-# cat(dput(colnames(ds)), sep = "\n")
-sql_create <- c(
+# cat(dput(colnames(ds_movies)), sep = "\n")
+# cat(dput(colnames(ds_boxoffice)), sep = "\n")
+# cat(dput(colnames(ds_buildings)), sep = "\n")
+# cat(dput(colnames(ds_employees)), sep = "\n")
+sql_create_movies <- c(
   "
-    DROP TABLE IF EXISTS dim_county;
+    DROP TABLE IF EXISTS Movies;
   ",
   "
-    CREATE TABLE `dim_county` (
-      county_id               int         not null primary key,
-      county_name             varchar(25) not null,
-      category                varchar(10) not null,
-      time_zone               varchar(25) not null
+    CREATE TABLE `Movies` (
+      Id               INT           not null primary key  ,
+      Title            VARCHAR(64)                         ,
+      Director         VARCHAR(64)                         ,
+      Year             INT                                 ,
+      Length_minutes   INT                                 
     );
   "
+  ,
+  "
+    DROP TABLE IF EXISTS Boxoffice;
+  ",
+  "
+    CREATE TABLE `Boxoffice` (
+      Movie_id              INT        not null primary key,            
+      Rating                INT                            ,          
+      Domestic_sales        INT                            ,                  
+      International_sales   INT                                                   
+    );
+  "
+)
+sql_create_buildings <- c(  
+  "
+    DROP TABLE IF EXISTS Employees;
+  ",
+  "
+    CREATE TABLE `Employees` (
+      Role                  varchar(64)
+      Name                  varchar(64) not null primary key
+      Building              varchar(8)
+      Years_employed        int
+    );
+  "
+  ,"
+    DROP TABLE IF EXISTS buildings;
+  ",
+  "
+    CREATE TABLE `Buildings` (
+      Building_name               int         not null primary key,
+      Capacity             INT not null,
+
+    );
+  "
+
 )
 
 # Remove old DB
 # if( file.exists(path_db) ) file.remove(path_db)
 
+# Write movies
 # Open connection
-cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db)
+cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db_movies)
 result <- DBI::dbSendQuery(cnn, "PRAGMA foreign_keys=ON;") #This needs to be activated each time a connection is made. #http://stackoverflow.com/questions/15301643/sqlite3-forgets-to-use-foreign-keys
 DBI::dbClearResult(result)
 DBI::dbListTables(cnn)
 
 # Create tables
-sql_create %>%
+sql_create_movies %>%
   purrr::walk(~DBI::dbExecute(cnn, .))
 DBI::dbListTables(cnn)
 
 # Write to database
-DBI::dbWriteTable(cnn, name='dim_county',            value=ds_slim,        append=TRUE, row.names=FALSE)
+DBI::dbWriteTable(cnn, name='Movies',     value=ds_movies_slim,    append=TRUE, row.names=FALSE)
+DBI::dbWriteTable(cnn, name='Boxoffice',  value=ds_boxoffice_slim, append=TRUE, row.names=FALSE)
+
+# Close connection
+DBI::dbDisconnect(cnn)
+
+# Write buildings
+# Open connection
+cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db_buildings)
+result <- DBI::dbSendQuery(cnn, "PRAGMA foreign_keys=ON;") #This needs to be activated each time a connection is made. #http://stackoverflow.com/questions/15301643/sqlite3-forgets-to-use-foreign-keys
+DBI::dbClearResult(result)
+DBI::dbListTables(cnn)
+
+# Create tables
+path_db_buildings %>%
+  purrr::walk(~DBI::dbExecute(cnn, .))
+DBI::dbListTables(cnn)
+
+# Write to database
+DBI::dbWriteTable(cnn, name='Buildings',            value=ds_buildings_slim,        append=TRUE, row.names=FALSE)
+DBI::dbWriteTable(cnn, name='Employees',            value=ds_employees_slim,        append=TRUE, row.names=FALSE)
 
 # Close connection
 DBI::dbDisconnect(cnn)
