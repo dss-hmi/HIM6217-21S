@@ -9,7 +9,7 @@ https://athena.ohdsi.org/search-terms/terms
 
 
 Interface defaults
-practices-1/workstation.html#workstation-administrator
+https://ouhscbbmc.github.io/data-science-practices-1/workstation.html#workstation-administrator
 
 How to install ODBC DSN
 https://github.com/OuhscBbmc/BbmcResources/blob/master/instructions/odbc-dsn.md
