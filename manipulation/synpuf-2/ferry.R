@@ -11,7 +11,7 @@ requireNamespace("DBI")
 requireNamespace("odbc")
 requireNamespace("tibble")
 requireNamespace("readr"                      )  # remotes::install_github("tidyverse/readr")
-requireNamespace("dplyr"                      )
+library("dplyr"                      )
 requireNamespace("checkmate"                  )
 requireNamespace("testit"                     )
 requireNamespace("config"                     )
@@ -21,11 +21,37 @@ requireNamespace("OuhscMunge"                 )  # remotes::install_github("Ouhs
 # Constant values that won't change.
 # config      <- config::get()
 dsn                   <- "omop_synpuf"
-path_db_1             <- "data-public/exercises/synpuf_2.sqlite3"
-path_sql_pt           <- "manipulation/synpuf-2/pt.sql"
-path_sql_dx           <- "manipulation/synpuf-2/dx.sql"
-path_sql_vt           <- "manipulation/synpuf-2/visit.sql"
+path_db_1             <- "data-public/exercises/synpuf/synpuf_2.sqlite3"
+path_sql_pt           <- "manipulation/synpuf/pt.sql"
+path_sql_dx           <- "manipulation/synpuf/dx.sql"
+path_sql_vt           <- "manipulation/synpuf/visit.sql"
 
+# ---- local-functions ---------------------------------------------------------
+get_a_sample <- function(
+  d,
+  varname            # unique of these
+  ,sample_size
+  ,show_all = FALSE
+){
+  # d <- ds_pt
+  # varname = "person_id"
+  # varname = "offense_arrest_cd"
+  sample_pool <- d %>% 
+    dplyr::distinct_(.dots = varname) %>% 
+    na.omit() %>% 
+    as.list() %>% unlist() %>% as.vector() 
+  if(show_all){ sample_size = length(sample_pool)}
+  selected_sample <- sample_pool %>% sample(size = sample_size, replace = FALSE)
+  
+  return(selected_sample)
+}  
+# How to use
+# ds %>% get_a_sample("person_id",  5)
+# ds %>% get_a_sample("offense_arrest_cd",  5, show_all = T) 
+# set.seed(42)
+# target_sample <- ds %>% 
+#   dplyr::filter(n_offenses > 1L) %>% 
+#   get_a_sample("person_id", 500)
 # ---- load-data ---------------------------------------------------------------
 ds_pt <- OuhscMunge::execute_sql_file(path_sql_pt, dsn, execute = F)
 ds_dx <- OuhscMunge::execute_sql_file(path_sql_dx, dsn, execute = F)
@@ -36,13 +62,43 @@ checkmate::assert_data_frame(ds_dx, min.rows = 10)
 checkmate::assert_data_frame(ds_vt, min.rows = 10)
 rm(path_sql_pt, path_sql_dx, path_sql_vt)
 
+
+ds_pt %>% glimpse()
+ds_dx %>% glimpse()
+ds_vt %>% glimpse()
+
 # ---- tweak-data --------------------------------------------------------------
+
+
+
+set.seed(TeachingDemos::char2seed(x = "synpuf-2-1", set = TRUE))
+sample_size <- 74
+sample_1 <- ds_pt %>% get_a_sample("person_id",sample_size)
+sample_1 # has both dx and visit
+
+set.seed(TeachingDemos::char2seed(x = "synpuf-2-2", set = TRUE))
+sample_size <- 18
+sample_2 <- ds_pt %>% get_a_sample("person_id",sample_size)
+sample_2 # has dx, but not visits
+
+set.seed(TeachingDemos::char2seed(x = "synpuf-2-3", set = TRUE))
+sample_size <- 8
+sample_3 <- ds_pt %>% get_a_sample("person_id",sample_size)
+sample_3 # has visits, but not dx
+
+set.seed(TeachingDemos::char2seed(x = "synpuf-2-4", set = TRUE))
+sample_size <- 3
+sample_4 <- ds_pt %>% get_a_sample("person_id",sample_size)
+sample_4 # has neither dx nor visit
+
+
 ds_pt <- 
   ds_pt %>% 
   tibble::as_tibble() %>%
   dplyr::mutate(
     dob                 = strftime(dob, "%Y-%m-%d"),
-  )
+  )%>% 
+  dplyr::filter(person_id %in% c(sample_1, sample_2, sample_3, sample_4))
 
 ds_dx <- 
   ds_dx %>% 
@@ -50,7 +106,16 @@ ds_dx <-
   dplyr::mutate(
     dx_date             = strftime(dx_date, "%Y-%m-%d"),
     icd9_description    = OuhscMunge::deterge_to_ascii(icd9_description)
-  )
+  )%>% 
+  dplyr::filter(person_id %in% c(sample_1, sample_2 ))
+
+ds_vt <- 
+  ds_vt %>% 
+  tibble::as_tibble() %>%
+  dplyr::mutate(
+    visit_date          = strftime(visit_date, "%Y-%m-%d"),
+  )%>% 
+  dplyr::filter(person_id %in% c(sample_1, sample_3 ))
 
 # ---- verify-values -----------------------------------------------------------
 # OuhscMunge::verify_value_headstart(ds_dx)
@@ -60,6 +125,7 @@ checkmate::assert_character(ds_pt$gender    , any.missing=F , pattern="^.{4,50}$
 checkmate::assert_character(ds_pt$race      , any.missing=T , pattern="^.{4,50}$"                                    )
 checkmate::assert_character(ds_pt$ethnicity , any.missing=F , pattern="^.{4,50}$"                                    )
 
+# OuhscMunge::verify_value_headstart(ds_dx)
 checkmate::assert_integer(  ds_dx$dx_id            , any.missing=F , lower=1, upper=6342  , unique=T)
 checkmate::assert_integer(  ds_dx$person_id        , any.missing=F , lower=1, upper=48    )
 checkmate::assert_character(ds_dx$dx_date          , any.missing=F , pattern = "^\\d{4}-\\d{2}-\\d{2}$")
@@ -67,6 +133,13 @@ checkmate::assert_character(ds_dx$icd9_code        , any.missing=F , pattern="^.
 checkmate::assert_character(ds_dx$icd9_description , any.missing=F , pattern="^.{2,255}$" )
 checkmate::assert_logical(  ds_dx$inpatient_visit  , any.missing=F                        )
 
+# OuhscMunge::verify_value_headstart(ds_vt)
+checkmate::assert_integer(  ds_vt$visit_id       , any.missing=F , lower=1, upper=55262 , unique=T)
+checkmate::assert_integer(  ds_vt$person_id      , any.missing=F , lower=1, upper=1103  )
+checkmate::assert_character(ds_vt$visit_category , any.missing=T , pattern="^.{15,16}$" )
+checkmate::assert_character(ds_vt$visit_date     , any.missing=F , pattern="^.{10,10}$" )
+checkmate::assert_integer(  ds_vt$provider_id    , any.missing=T , lower=1, upper=40068 )
+checkmate::assert_integer(  ds_vt$care_site_id   , any.missing=T , lower=1, upper=23259 )
 # ---- save-to-db --------------------------------------------------------------
 # If there's *NO* PHI, a local database like SQLite fits a nice niche if
 #   * the data is relational and
@@ -99,13 +172,16 @@ sql_create <- c(
     );
   ",
   "
-    CREATE TABLE `vt` (
+    DROP TABLE IF EXISTS visit;
+  ",
+  "
+    CREATE TABLE `visit` (
       visit_id            integer       primary key,
       person_id           integer       not null,
-      visit_category      varchar(255)  not null,
+      visit_category      varchar(255)          ,
       visit_date          date          not null,
-      provider_id         integer       not null,
-      care_site_id        integer       not null,
+      provider_id         integer               ,
+      care_site_id        integer       
     );
   "
 )
@@ -119,7 +195,7 @@ cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db_1)
 DBI::dbListTables(cnn)
 
 # Create tables
-sql_create[1:4] %>%
+sql_create[1:length(sql_create)] %>%
   purrr::walk(~DBI::dbExecute(cnn, .))
 
 DBI::dbListTables(cnn)
@@ -128,7 +204,17 @@ DBI::dbListTables(cnn)
 # DBI::dbWriteTable(cnn, name='patient',              value=ds,        append=TRUE, row.names=FALSE)
 DBI::dbWriteTable(value=ds_pt, conn=cnn, name='patient', append=TRUE, row.names=FALSE)
 DBI::dbWriteTable(value=ds_dx, conn=cnn, name='dx', append=TRUE, row.names=FALSE)
+DBI::dbWriteTable(value=ds_vt, conn=cnn, name='visit', append=TRUE, row.names=FALSE)
 
 # Close connection
-DBI::dbDisconnect(cnn)
+DBI::dbDisconnect(cnn) 
+
+# Save for exploration in R
+path_rds_1 <- stringr::str_replace(path_db_1, ".sqlite3$", ".rds")
+dto <- list(
+  "ds_pt" = ds_pt # patient
+  ,"ds_dx" = ds_dx # diagnosis
+  ,"ds_vt" = ds_vt # visit
+)
+
 
