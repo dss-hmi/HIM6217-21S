@@ -158,3 +158,10 @@ DBI::dbWriteTable(value=ds_dx, conn=cnn, name='dx', append=TRUE, row.names=FALSE
 # Close connection
 DBI::dbDisconnect(cnn)
 
+
+# Save for exploration in R
+path_rds_1 <- stringr::str_replace(path_db_1, ".sqlite3$", ".rds")
+dto <- list(
+  "ds_pt" = ds_pt # patient
+  ,"ds_dx" = ds_dx # diagnosis
+)
