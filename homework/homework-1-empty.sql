@@ -96,7 +96,7 @@
 
 
 
--- 11) How many patients were born before 1936? 
+-- 11) How many patients were born before 1946? 
 -- Requirements:
 -- Must use: count(), WHERE
 -- Output dimensions: 1x1
