@@ -15,6 +15,7 @@ library("dplyr"                      )
 requireNamespace("checkmate"                  )
 requireNamespace("testit"                     )
 requireNamespace("config"                     )
+requireNamespace("TeachingDemos"              )
 requireNamespace("OuhscMunge"                 )  # remotes::install_github("OuhscBbmc/OuhscMunge")
 
 # ---- declare-globals ---------------------------------------------------------
@@ -119,17 +120,17 @@ ds_vt <-
 
 # ---- verify-values -----------------------------------------------------------
 # OuhscMunge::verify_value_headstart(ds_dx)
-checkmate::assert_integer(  ds_pt$person_id , any.missing=F , lower=1, upper=999                           , unique=T)
+checkmate::assert_integer(  ds_pt$person_id , any.missing=F , lower=1, upper=9999                          , unique=T)
 checkmate::assert_character(ds_pt$dob       , any.missing=F , pattern = "^\\d{4}-\\d{2}-\\d{2}$")
 checkmate::assert_character(ds_pt$gender    , any.missing=F , pattern="^.{4,50}$"                                    )
 checkmate::assert_character(ds_pt$race      , any.missing=T , pattern="^.{4,50}$"                                    )
 checkmate::assert_character(ds_pt$ethnicity , any.missing=F , pattern="^.{4,50}$"                                    )
 
 # OuhscMunge::verify_value_headstart(ds_dx)
-checkmate::assert_integer(  ds_dx$dx_id            , any.missing=F , lower=1, upper=6342  , unique=T)
-checkmate::assert_integer(  ds_dx$person_id        , any.missing=F , lower=1, upper=48    )
+checkmate::assert_integer(  ds_dx$dx_id            , any.missing=F , lower=1, upper=999999   , unique=T)
+checkmate::assert_integer(  ds_dx$person_id        , any.missing=F , lower=1, upper=9999    )
 checkmate::assert_character(ds_dx$dx_date          , any.missing=F , pattern = "^\\d{4}-\\d{2}-\\d{2}$")
-checkmate::assert_character(ds_dx$icd9_code        , any.missing=F , pattern="^.{5,6}$"   )
+checkmate::assert_character(ds_dx$icd9_code        , any.missing=F , pattern="^.{3,6}$"   )
 checkmate::assert_character(ds_dx$icd9_description , any.missing=F , pattern="^.{2,255}$" )
 checkmate::assert_logical(  ds_dx$inpatient_visit  , any.missing=F                        )
 
