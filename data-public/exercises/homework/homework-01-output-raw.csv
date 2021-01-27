@@ -58,12 +58,12 @@ Requirements:
 MUST use: count(), WHERE, != 
 Output dimensions: 1x1
 ",0,synpuf-homework-01-010
-"11) How many patients were born before 1936? 
+"11) How many patients were born before 1946? 
 Requirements:
 Must use: count(), WHERE
 Output dimensions: 1x1
 ",28,synpuf-homework-01-011
-"12) How many patients were born between 1930 and 1940 ? 
+"12) How many patients were born in the 1930s ? 
 Requirements:
 Must use: count(), WHERE, BETWEEN
 Output dimensions: 1x1
@@ -79,4 +79,4 @@ Must use: count(), GROUP BY, AS
 Must NOT use: WHERE
 create a Boolean field named 'born_after_1925'
 output must contain fields: gender, race, born_after_1925, n_patients
-",1,synpuf-homework-01-014
+",11,synpuf-homework-01-014

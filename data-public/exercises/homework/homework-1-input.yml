@@ -156,7 +156,7 @@ items:
     pull_row: 1
   -
     prompt: |
-      12) How many patients were born between 1930 and 1940 ? 
+      12) How many patients were born in the 1930s ? 
       Requirements:
       Must use: count(), WHERE, BETWEEN
       Output dimensions: 1x1
@@ -194,8 +194,9 @@ items:
     code: |
       SELECT gender, race, dob > '1925-12-31' as born_after_1925, count(*) as n_patients
       FROM patient
+      WHERE (race is not null) & (gender is not null)
       GROUP BY gender, born_after_1925
       ORDER BY gender, born_after_1925
       ;
     pull_column: n_patients
-    pull_row: 3
+    pull_row: 4
