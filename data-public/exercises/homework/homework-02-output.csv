@@ -1,0 +1,75 @@
+Type,Title/ID,Points,Question Wording,Correct Answer,Choice 1,Choice 2,Choice 3,Choice 4,Choice 5,Choice 6,Choice 7,Choice 8,Choice 9,Choice 10,General Feedback,Correct Feedback,Incorrect Feedback,Feedback 1,Feedback 2,Feedback 3,Feedback 4,Feedback 5,Feedback 6,Feedback 7,Feedback 8,Feedback 9,Feedback 10,Topic,Difficulty Level,Meta 1,Meta 2,Meta 3,Meta 4
+FB,synpuf-homework-02-001,4.61538461538461,"1) How many records(rows) are in the `dx` table
+Must use: count()
+Output dimensions: 1x1
+",,5414,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-02-002,4.61538461538461,"2) How many unique patients are in the `dx` table? 
+Must use: count()
+Must NOT use: (*)
+Output dimensions: 1x1
+",,39,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-02-003,4.61538461538461,"3) How many unique dates are in the `dx` table? 
+Must use: count()
+Must NOT use: (*)
+Output dimensions: 1x1
+Output must contain columns: n_unique_dates
+",,867,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-02-004,4.61538461538461,"4) How many unique ICD9 codes are in the `dx` table? 
+Must use: count()
+Must NOT use: (*)
+Output dimensions: 1x1
+Output must contain columns: n_unique_icd9
+",,1591,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-02-005,4.61538461538461,"5) How many times either of two diagnoses 'Pain in neck' or 'Pain in limb' appear in the dx table?
+Requirements:
+Must use: count(), WHERE, IN
+Output dimensions: 1x1
+",,46,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-02-006,4.61538461538461,"6) How many distinct ICD-9 diagnoses include the word 'pain' in their description?
+Requirements:
+Must use: count(), distinct(), WHERE, LIKE
+Output dimensions: 1x1
+Output must contain columns: n_contain_pain
+",,28,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-02-007,4.61538461538461,"7) How many distinct ICD-9 diagnoses begin with the word 'pain' in their description?
+Requirements:
+Must use: count(), distinct(), WHERE, LIKE
+Output dimensions: 1x1
+Output must contain columns: n_start_with_patin
+",,12,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-02-008,4.61538461538461,"8) What diagnosis code is most prevalent (i.e appears in the greatest number of records)? 
+Requirements:
+Must use: count(), as, GROUP BY, ORDER BY, LIMIT
+Output dimensions: 1x3
+Output contains columns: n_dx, icd9_code, icd9_description
+",,250.00,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-02-009,4.61538461538461,"9) What is the greatest number of distinct patients with the same diagnosis? 
+Requirements:
+Must use: count(), distinct(), as, GROUP BY, ORDER BY, LIMIT
+Must NOT use: WHERE
+Output dimensions: 1x3
+Output contains columns: n_patients, icd9_code, icd9_description
+",,26,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-02-010,4.61538461538461,"10) What is the larger number of unique diagnoses (icd9_codes)  that can be observed in one person?
+Requirements:
+MUST USE: count(), DESC, LIMIT
+Output dimensions: 1x2
+Output must contain columns: person_id, n_unique_dx
+",,243,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-02-011,4.61538461538461,"11) What is the largest number of non-unique diagnoses (icd9_codes) that can be observed in a single person?
+Requirements:
+MUST USE: count(), DESC, LIMIT
+Output dimensions: 1x2
+Output must contain columns: person_id, n_total_dx
+",,420,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-02-012,4.61538461538461,"12) How many diagnoses (icd9_description) start with a letter 'A' and whose forth letter is 't'?
+Requirements:
+MUST use: like
+Output dimensions: 1x1
+Output must contain columns: n_1a_4t
+",,52,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-02-013,4.61538461538461,"13) What is the icd9_code of the diagnosis with the longest label (icd9_description)
+MUST use: length()
+Output dimensions: 1x3
+Output must contain columns: icd9_description, icd9_code, n_char
+",,404.91,,,,,,,,,,,,,,,,,,,,,,,,,,,,
