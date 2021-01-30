@@ -86,11 +86,11 @@ items:
       Output dimensions: 1x1
       Output must contain columns: n_start_with_patin
     code: |
-      SELECT count(distinct(icd9_description)) as n_starts_with_patin
+      SELECT count(distinct(icd9_description)) as n_starts_with_pain
       FROM dx
       WHERE icd9_description LIKE 'pain%'
       ;
-    pull_column: "n_starts_with_patin"
+    pull_column: n_starts_with_pain
     pull_row: 1
   -
     prompt: |
@@ -185,4 +185,9 @@ items:
       ;
     pull_column: icd9_code
     pull_row: 1
-  
+
+
+    
+
+
+         
