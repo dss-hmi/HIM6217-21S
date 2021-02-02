@@ -48,7 +48,7 @@ WHERE icd9_description IN (
 )
 ;
 
--- 6) How many distinct ICD-9 diagnoses include the word 'pain' in their description?
+-- 6) How many distinct ICD-9 diagnoses include the string 'pain' in their description?
 -- Requirements:
 -- Must use: count(), distinct(), WHERE, LIKE
 -- Output dimensions: 1x1
@@ -120,7 +120,7 @@ ORDER BY n_total_dx DESC
 LIMIT 1
 ;
 
--- 12) How many diagnoses (icd9_description) start with a letter 'A' and whose forth letter is 't'?
+-- 12) How many unique diagnoses (icd9_description) start with a letter 'A' and whose forth letter is 't'?
 -- Requirements:
 -- MUST use: like
 -- Output dimensions: 1x1
