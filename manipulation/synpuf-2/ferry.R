@@ -69,27 +69,24 @@ ds_dx %>% glimpse()
 ds_vt %>% glimpse()
 
 # ---- tweak-data --------------------------------------------------------------
+set.seed(TeachingDemos::char2seed(x = "synpuf_2", set = TRUE))
 
-
-
-set.seed(TeachingDemos::char2seed(x = "synpuf-2-1", set = TRUE))
-sample_size <- 74
+sample_size <- 70
 sample_1 <- ds_pt %>% get_a_sample("person_id",sample_size)
 sample_1 # has both dx and visit
 
-set.seed(TeachingDemos::char2seed(x = "synpuf-2-2", set = TRUE))
-sample_size <- 18
-sample_2 <- ds_pt %>% get_a_sample("person_id",sample_size)
+sample_size <- 20
+sample_2 <- ds_pt %>% filter(!person_id %in% sample_1) %>% get_a_sample("person_id",sample_size)
 sample_2 # has dx, but not visits
 
-set.seed(TeachingDemos::char2seed(x = "synpuf-2-3", set = TRUE))
-sample_size <- 8
-sample_3 <- ds_pt %>% get_a_sample("person_id",sample_size)
+
+sample_size <- 10
+sample_3 <- ds_pt %>% filter(!person_id %in% c(sample_1, sample_2)) %>% get_a_sample("person_id",sample_size)
 sample_3 # has visits, but not dx
 
 set.seed(TeachingDemos::char2seed(x = "synpuf-2-4", set = TRUE))
-sample_size <- 3
-sample_4 <- ds_pt %>% get_a_sample("person_id",sample_size)
+sample_size <- 5
+sample_4 <- ds_pt %>% filter(!person_id %in% c(sample_1, sample_2, sample_3)) %>% get_a_sample("person_id",sample_size)
 sample_4 # has neither dx nor visit
 
 
@@ -99,7 +96,8 @@ ds_pt <-
   dplyr::mutate(
     dob                 = strftime(dob, "%Y-%m-%d"),
   )%>% 
-  dplyr::filter(person_id %in% c(sample_1, sample_2, sample_3, sample_4))
+  dplyr::filter(person_id %in% c(sample_1, sample_2, sample_3, sample_4))# length(c(sample_1,sample_2, sample_3, sample_4))
+ds_pt %>% summarize(n_patient = n_distinct(person_id))
 
 ds_dx <- 
   ds_dx %>% 
@@ -108,7 +106,8 @@ ds_dx <-
     dx_date             = strftime(dx_date, "%Y-%m-%d"),
     icd9_description    = OuhscMunge::deterge_to_ascii(icd9_description)
   )%>% 
-  dplyr::filter(person_id %in% c(sample_1, sample_2 ))
+  dplyr::filter(person_id %in% c(sample_1, sample_2 )) # length(c(sample_1,sample_2))
+ds_dx %>% summarize(n_patient = n_distinct(person_id))
 
 ds_vt <- 
   ds_vt %>% 
@@ -116,7 +115,8 @@ ds_vt <-
   dplyr::mutate(
     visit_date          = strftime(visit_date, "%Y-%m-%d"),
   )%>% 
-  dplyr::filter(person_id %in% c(sample_1, sample_3 ))
+  dplyr::filter(person_id %in% c(sample_1, sample_3 )) # length(c(sample_1,sample_3))
+ds_vt %>% summarize(n_patient = n_distinct(person_id))
 
 # ---- verify-values -----------------------------------------------------------
 # OuhscMunge::verify_value_headstart(ds_dx)
