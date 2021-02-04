@@ -69,7 +69,7 @@ ds_dx %>% glimpse()
 ds_vt %>% glimpse()
 
 # ---- tweak-data --------------------------------------------------------------
-set.seed(TeachingDemos::char2seed(x = "synpuf_2", set = TRUE))
+set.seed(TeachingDemos::char2seed(x = "homework2", set = TRUE))
 
 sample_size <- 70
 sample_1 <- ds_pt %>% get_a_sample("person_id",sample_size)
