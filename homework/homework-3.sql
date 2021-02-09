@@ -151,9 +151,12 @@ ORDER BY patient.person_id asc
 
 
 -- 11) Among patients present in all three tables, what person_id number is the smallest?
+-- Output dimensions: ?x3
+-- Output must include columns named: `person_id_patient`, `person_id_dx`, `person_id_visit`
 SELECT
   distinct patient.person_id as person_id_patient,
-  dx.person_id as person_id_dx, visit.person_id as person_id_visit
+  dx.person_id as person_id_dx
+  ,visit.person_id as person_id_visit
   --count(distinct patient.person_id) as person_count
 FROM patient 
   inner  join dx    on patient.person_id = dx.person_id
