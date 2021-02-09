@@ -65,6 +65,16 @@ OuhscMunge::column_rename_headstart(ds_patients)
 OuhscMunge::column_rename_headstart(ds_visits)
 OuhscMunge::column_rename_headstart(ds_dx)
 
+
+ds_patients <- 
+  ds_patients %>% mutate(dob = as.character(dob))
+
+ds_visits <- ds_visits %>% 
+  mutate(visit_date = as.character(visit_date))
+
+ds_dx <- ds_dx %>% 
+  mutate(dx_date = as.character(dx_date))
+
   # dplyr::arrange(subject_id) # %>%
   # tibble::rowid_to_column("subject_id") # Add a unique index if necessary
 ds_patients <- 
@@ -112,7 +122,7 @@ ds_patients_slim <-
     ,name_first
     ,name_last
     ,sex
-    ,dob
+    ,dob 
   )
 
 ds_visits_slim <- 
