@@ -1,0 +1,12 @@
+visit_id,person_id,visit_date,visit_category
+101,1,2013-02-04,Inpatient
+102,2,2013-11-30,Outpatient
+103,2,2014-05-12,Inpatient
+104,2,2015-04-19,Inpatient
+105,3,2016-07-15,Outpatient
+106,3,2017-04-28,Inpatient
+107,3,2018-02-05,Outpatient
+108,3,2019-08-07,Inpatient
+109,5,2019-08-17,Inpatient
+110,5,2019-03-12,Outpatient
+111,5,2019-05-12,Outpatient

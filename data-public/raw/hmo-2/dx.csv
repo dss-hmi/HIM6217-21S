@@ -1,0 +1,11 @@
+dx_id,person_id,dx_date,icd9_code,icd9_label
+101,1,2013-02-04,724.2,Lumbago
+102,2,2013-11-30,530.12,Acute esophagitis
+103,2,2014-05-12,728.85,Spasm of muscle
+104,2,2015-04-19,714.0,Rheumatoid arthritis
+105,3,2016-07-15,703.0,Ingrowing nail
+106,3,2017-04-28,729.5,Pain in limb
+107,3,2018-02-05,728.85,Spasm of muscle
+108,3,2019-08-07,729.5,Pain in limb
+109,4,2017-05-09,724.2,Lumbago
+110,4,2019-05-11,728.85,Spasm of muscle
