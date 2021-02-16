@@ -162,7 +162,24 @@ LIMIT 3; --SQLite syntax
 -- Q. During what month of 2009 the most diagnoses where issued? 
 -- Q. What month of observation has the most diverse body of diagnoses? (YYYY-MM)
 -- Q. What provider sees patients with the highest number of diagnoses? 
--- Q. What care site sees the most patients who have diabetes? 
+-- Q. What care site (id) sees the most patients, born before 1960, who have at least one dx that includes the term "diabetes"? 
+
+SELECT
+  v.care_site_id
+  ,count(distinct d.person_id)  as patient_count
+  ,count(distinct v.visit_id )  as visit_count
+  --d.*
+FROM dx as d
+  left  join visit   v on d.person_id = v.person_id
+  left  join patient p on d.person_id = p.person_id
+WHERE 
+  d.icd9_description like '%diabetes%'
+  and
+  p.dob <= '1959-12-31' 
+  --or: p.dob < '1960-01-01'
+GROUP BY v.care_site_id
+ORDER BY count(distinct d.person_id) desc, count(distinct v.visit_id) desc
+
 -- Q. What care site processes the most inpatient clients? 
 -- Q. In what year there was the highest number of outpatient visits? 
 -- Q. What is the most prevalent diagnosis (most unique patients)  of 2009? 
