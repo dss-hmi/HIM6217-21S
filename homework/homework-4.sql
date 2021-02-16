@@ -161,24 +161,32 @@ LIMIT 3; --SQLite syntax
 -- Three tables
 -- Q. During what month of 2009 the most diagnoses where issued? 
 -- Q. What month of observation has the most diverse body of diagnoses? (YYYY-MM)
--- Q. What provider sees patients with the highest number of diagnoses? 
--- Q. What care site (id) sees the most patients, born before 1960, who have at least one dx that includes the term "diabetes"? 
+
+
+-- Q. What provider sees patients with the highest number of diagnoses? --tricky b/c a patient can have multiple providers
+-- Q. 
+-- part 1: What care_site_id has the most patients ?  Limit to patients born before 1960 with at least one dx that includes the term "diabetes".  Exclude visits with a missing care_site_id.
+-- part 2: What care_site_id has the most visits   ?  Limit to patients born before 1960 with at least one dx that includes the term "diabetes".  Exclude visits with a missing care_site_id.
+-- part 3: What care_site_id has the most providers?  Limit to patients born before 1960 with at least one dx that includes the term "diabetes".  Exclude visits with a missing care_site_id.
 
 SELECT
   v.care_site_id
-  ,count(distinct d.person_id)  as patient_count
-  ,count(distinct v.visit_id )  as visit_count
+  ,count(distinct d.person_id  )  as patient_count
+  ,count(distinct v.visit_id   )  as visit_count
+  ,count(distinct v.provider_id)  as provider_count
   --d.*
 FROM dx as d
   left  join visit   v on d.person_id = v.person_id
   left  join patient p on d.person_id = p.person_id
 WHERE 
+  v.care_site_id is not null
+  and
   d.icd9_description like '%diabetes%'
   and
   p.dob <= '1959-12-31' 
   --or: p.dob < '1960-01-01'
 GROUP BY v.care_site_id
-ORDER BY count(distinct d.person_id) desc, count(distinct v.visit_id) desc
+ORDER BY count(distinct d.person_id) desc, count(distinct v.visit_id) desc, count(distinct v.provider_id) desc
 
 -- Q. What care site processes the most inpatient clients? 
 -- Q. In what year there was the highest number of outpatient visits? 
