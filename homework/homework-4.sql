@@ -186,12 +186,21 @@ WHERE
   p.dob <= '1959-12-31' 
   --or: p.dob < '1960-01-01'
 GROUP BY v.care_site_id
-ORDER BY count(distinct d.person_id) desc, count(distinct v.visit_id) desc, count(distinct v.provider_id) desc
+ORDER BY count(distinct d.person_id) desc, count(distinct v.visit_id) desc, count(distinct v.provider_id) desc;
 
 -- Q. What care site processes the most inpatient clients? 
 -- Q. In what year there was the highest number of outpatient visits? 
 -- Q. What is the most prevalent diagnosis (most unique patients)  of 2009? 
 
 
-
-
+-- Q. Of the two care sites that have 50+ visits, what is the average age at visit?  Report each care site separately.
+-- Note 1: use the `having` clause.
+-- Note 2: a patient with three visits will be counted three times; a patient with one visit will be counted only once.
+SELECT
+  v.care_site_id
+  ,avg((julianday(v.visit_date) - julianday(pt.dob))/365.25) as pt_age_mean
+  ,count(*)                                                  as visit_count
+FROM visit v
+  left  join patient pt on v.person_id = pt.person_id
+GROUP BY v.care_site_id
+HAVING 50 <= count(*) --This syntax works for SQLite & SQL Server
