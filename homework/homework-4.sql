@@ -129,7 +129,27 @@ FROM
   ) as pt;
   
 -- Patient + Diagnoses
--- Q. What diagnosis appears to affect the oldest population (age at the time of diagnosis)
+-- Q. What are the 3 most frequent diagnoses appears for patients 70+
+SELECT
+  icd9_code
+  ,icd9_description
+  ,count(*)           as icd9_count
+  --,d.*
+  --,pt.*
+  --,cast((julianday(d.dx_date) - julianday(pt.dob)) / 365.25 as int) as pt_age
+  --,SQL Server syntax: floor(datediff(day, pt.dob, d.dx_date) / 365.25) as pt_age
+  --,(d.dx_date - pt.dob)  as pt_age -- This probably ignores the month & day entire --using only the year for arithmetic?
+FROM dx d
+  left  join patient pt on d.person_id = pt.person_id
+WHERE 
+  70 <= cast((julianday(d.dx_date) - julianday(pt.dob)) / 365.25 as int)
+  --SQL Server syntax: 70 <=floor(datediff(day, pt.dob, d.dx_date) / 365.25)
+GROUP BY icd9_code, icd9_description
+ORDER BY count(*) desc
+LIMIT 3; --SQLite syntax
+--SQL Server syntax: fetch first 42 rows only;
+
+
 -- Q. What 
 
 -- Patient + Visit
