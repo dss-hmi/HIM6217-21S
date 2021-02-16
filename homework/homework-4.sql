@@ -70,31 +70,64 @@ ORDER BY age_min desc
 
 -- Q. what the patient's first diagnosis? 
 
+-- Q. What is the age of each female patient at their last visit? 
 -- Who was the youngest female patient at last visit (recorded in the system)? 
--- Q. What is the average age of female patients at vist? 
 SELECT
   p.person_id
   ,p.dob
   ,v.visit_date
-  --,(julianday(d.dx_date) - julianday(p.dob)) as date_diff -- diff in days
-  --,(julianday(d.dx_date) - julianday(p.dob))/365.25 as date_diff -- diff in years
-  --,round((julianday(d.dx_date) - julianday(p.dob))/365.25, 2) as date_diff -- diff in years
-  --,min(round((julianday(d.dx_date) - julianday(p.dob))/365.25, 2)) as age_min -- age at first dx
-  --,avg(round((julianday(d.dx_date) - julianday(p.dob))/365.25, 2)) as age_mean
   ,max(round((julianday(v.visit_date) - julianday(p.dob))/365.25, 2)) as age_max  -- age at last dx
   ,count(v.visit_id)                                                  as visit_count
 FROM patient as p
   left join visit as v on p.person_id = v.person_id
-  WHERE gender = 'female'
+WHERE 
+  gender = 'female'
   and 
   visit_date is not NULL
 GROUP BY p.person_id, p.dob
 ORDER BY age_max asc
 ;
+-- Q. What is the average age of female patients at visit? 
+-- Version 1: using a CTE
+with pt as (
+  SELECT
+    p.person_id
+    ,p.dob
+    ,v.visit_date
+    ,max((julianday(v.visit_date) - julianday(p.dob))/365.25) as age_max  -- age at last dx
+    ,count(v.visit_id)                                                  as visit_count
+  FROM patient as p
+    left join visit as v on p.person_id = v.person_id
+  WHERE 
+    gender = 'female'
+    and 
+    visit_date is not NULL
+  GROUP BY p.person_id, p.dob
+)
+SELECT 
+  avg(age_max) as age_average_at_last_visit
+FROM pt;
 
-
-
-
+-- Version 2: using a subquery
+SELECT 
+  avg(age_max) as age_average_at_last_visit
+FROM 
+  (
+    SELECT
+      p.person_id
+      ,p.dob
+      ,v.visit_date
+      ,max((julianday(v.visit_date) - julianday(p.dob))/365.25) as age_max  -- age at last dx
+      ,count(v.visit_id)                                                  as visit_count
+    FROM patient as p
+      left join visit as v on p.person_id = v.person_id
+    WHERE 
+      gender = 'female'
+      and 
+      visit_date is not NULL
+    GROUP BY p.person_id, p.dob
+  ) as pt;
+  
 -- Patient + Diagnoses
 -- Q. What diagnosis appears to affect the oldest population (age at the time of diagnosis)
 -- Q. What 
