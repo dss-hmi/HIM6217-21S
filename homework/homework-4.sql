@@ -161,6 +161,12 @@ LIMIT 3; --SQLite syntax
 -- Three tables
 -- Q. During what month of 2009 the most diagnoses where issued? 
 -- Q. What month of observation has the most diverse body of diagnoses? (YYYY-MM)
+-- Note 1: use either `strftime()` (for SQLite only) or `substr()` (for SQLite or SQL Server)
+SELECT
+ v.*
+ ,substr(v.visit_date, 1, 7)       as visit_month_1
+ ,strftime('%Y-%m', v.visit_date)  as visit_month_2
+FROM visit as v;
 
 
 -- Q. What provider sees patients with the highest number of diagnoses? --tricky b/c a patient can have multiple providers
