@@ -12,9 +12,9 @@
 
 
 
--- Visit
--- Q. What care site has the most providers?
--- Q. How many visits are observed in the care site with the most providers?
+-- 1) How many visits are observed in the care site with the most providers?
+-- Output dimensions: ?x3
+-- Output must contain columns: `care_site_id`,'provider_id_count','visit_count'
 SELECT 
   care_site_id
   ,count(distinct provider_id) as provider_id_count
@@ -24,8 +24,12 @@ GROUP BY care_site_id
 ORDER BY provider_id_count desc
 ;
 
--- Q. How many care sites does the busines provier practice at? 
--- hint: busiest = most visits
+
+
+-- 2) How many care sites does the busiest provier practice at? 
+-- Hint: "busiest" defined as one with the most visits
+-- Output dimensions: ?x3
+-- Output must contain columns: `provider_id`,'care_site_id_count','visit_count'
 SELECT
   provider_id
   ,count(distinct care_site_id) as care_site_id_count
@@ -35,7 +39,12 @@ GROUP BY provider_id
 ORDER BY visit_count desc
 ;
 
--- Q. How many providers practice at more than 1 care site?
+-- 3) How many providers practice at more than 1 care site?
+-- MUST Use: subquery
+-- Output dimensions: 1x1
+-- Output must contain columns: `provider_count`
+SELECT count(*) AS provider_count
+FROM (
 SELECT
   provider_id
   ,count(distinct care_site_id) as care_site_id_count
@@ -44,12 +53,14 @@ WHERE provider_id is not NULL
 GROUP BY provider_id
 HAVING care_site_id_count > 1
 ORDER BY care_site_id_count desc
+)
 ;
 
--- Diagnosis
--- Who was the oldest male patient at first diagnosis? 
--- Q. What is the average age of male patients at first diagnosis (recorded in the system)? 
--- Note: where a simple summary/aggregation is aligned with the questions
+-- 4) What is the age of the oldest male patient at his first diagnosis? 
+-- Output dimensions: 1x5
+-- Output must contain columns: `person_id`,`dob`,`dx_date`,`age_at_first_dx`,`dx_count`
+-- MUST use: julianday(), min(), round()
+-- Round `age_at_first_dx` to two decimal places
 SELECT
   p.person_id
   ,p.dob
@@ -57,7 +68,7 @@ SELECT
   --,(julianday(d.dx_date) - julianday(p.dob)) as date_diff -- diff in days
   --,(julianday(d.dx_date) - julianday(p.dob))/365.25 as date_diff -- diff in years
   --,round((julianday(d.dx_date) - julianday(p.dob))/365.25, 2) as date_diff -- diff in years
-  ,min(round((julianday(d.dx_date) - julianday(p.dob))/365.25, 2)) as age_min -- age at first dx
+  ,min(round((julianday(d.dx_date) - julianday(p.dob))/365.25, 2)) as age_at_first_dx -- age at first dx
   --,avg(round((julianday(d.dx_date) - julianday(p.dob))/365.25, 2)) as age_mean
   --,max(round((julianday(d.dx_date) - julianday(p.dob))/365.25, 2)) as age_max  -- age at last dx
   ,count(d.dx_id)                                                  as dx_count
@@ -65,13 +76,15 @@ FROM patient as p
   left join dx as d on p.person_id = d.person_id
   WHERE gender = 'male'
 GROUP BY p.person_id, p.dob
-ORDER BY age_min desc
+ORDER BY age_at_first_dx desc
 ;
 
--- Q. what the patient's first diagnosis? 
 
--- Q. What is the age of each female patient at their last visit? 
--- Who was the youngest female patient at last visit (recorded in the system)? 
+-- 5) What is the age of the youngest female patient at her last visit ? 
+-- Output dimensions: 1x5
+-- Output must contain columns: `person_id`,`dob`,`dx_date`,`age_at_first_dx`,`dx_count`
+-- MUST use: julianday(), min(), round()
+-- Round `age_at_first_dx` to two decimal places
 SELECT
   p.person_id
   ,p.dob
@@ -87,6 +100,7 @@ WHERE
 GROUP BY p.person_id, p.dob
 ORDER BY age_max asc
 ;
+
 -- Q. What is the average age of female patients at visit? 
 -- Version 1: using a CTE
 with pt as (
@@ -108,9 +122,15 @@ SELECT
   avg(age_max) as age_average_at_last_visit
 FROM pt;
 
--- Version 2: using a subquery
+
+-- Q. What is the average age of female patients at their latest visit? 
+-- Output dimensions: 1x5
+-- Output must contain columns: `age_average_at_last_visit`
+-- MUST use: subquery
+-- MUST use: julianday(), max(), round()
+-- Round `age_at_first_dx` to two decimal places
 SELECT 
-  avg(age_max) as age_average_at_last_visit
+  round(avg(age_max),1) as age_average_at_last_visit
 FROM 
   (
     SELECT
@@ -126,10 +146,12 @@ FROM
       and 
       visit_date is not NULL
     GROUP BY p.person_id, p.dob
-  ) as pt;
+  )
+;
   
 -- Patient + Diagnoses
 -- Q. What are the 3 most frequent diagnoses appears for patients 70+
+-- Q. What is the second most frequent diagnosis (icd9_description) for patients 70+
 SELECT
   icd9_code
   ,icd9_description
