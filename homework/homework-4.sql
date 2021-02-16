@@ -13,13 +13,87 @@
 
 
 -- Visit
--- Q. What care site has the most providers
--- Q. What provider is the busiest (records most visits)?
+-- Q. What care site has the most providers?
+-- Q. How many visits are observed in the care site with the most providers?
+SELECT 
+  care_site_id
+  ,count(distinct provider_id) as provider_id_count
+  ,count(*)                    as visit_count
+FROM visit
+GROUP BY care_site_id
+ORDER BY provider_id_count desc
+;
 
+-- Q. How many care sites does the busines provier practice at? 
+-- hint: busiest = most visits
+SELECT
+  provider_id
+  ,count(distinct care_site_id) as care_site_id_count
+  ,count(*)                     as visit_count
+FROM visit
+GROUP BY provider_id
+ORDER BY visit_count desc
+;
+
+-- Q. How many providers practice at more than 1 care site?
+SELECT
+  provider_id
+  ,count(distinct care_site_id) as care_site_id_count
+FROM visit
+WHERE provider_id is not NULL
+GROUP BY provider_id
+HAVING care_site_id_count > 1
+ORDER BY care_site_id_count desc
+;
 
 -- Diagnosis
--- Q. What is the average age of male patients at diagnosis? 
+-- Who was the oldest male patient at first diagnosis? 
+-- Q. What is the average age of male patients at first diagnosis (recorded in the system)? 
+-- Note: where a simple summary/aggregation is aligned with the questions
+SELECT
+  p.person_id
+  ,p.dob
+  ,d.dx_date
+  --,(julianday(d.dx_date) - julianday(p.dob)) as date_diff -- diff in days
+  --,(julianday(d.dx_date) - julianday(p.dob))/365.25 as date_diff -- diff in years
+  --,round((julianday(d.dx_date) - julianday(p.dob))/365.25, 2) as date_diff -- diff in years
+  ,min(round((julianday(d.dx_date) - julianday(p.dob))/365.25, 2)) as age_min -- age at first dx
+  --,avg(round((julianday(d.dx_date) - julianday(p.dob))/365.25, 2)) as age_mean
+  --,max(round((julianday(d.dx_date) - julianday(p.dob))/365.25, 2)) as age_max  -- age at last dx
+  ,count(d.dx_id)                                                  as dx_count
+FROM patient as p
+  left join dx as d on p.person_id = d.person_id
+  WHERE gender = 'male'
+GROUP BY p.person_id, p.dob
+ORDER BY age_min desc
+;
+
+-- Q. what the patient's first diagnosis? 
+
+-- Who was the youngest female patient at last visit (recorded in the system)? 
 -- Q. What is the average age of female patients at vist? 
+SELECT
+  p.person_id
+  ,p.dob
+  ,v.visit_date
+  --,(julianday(d.dx_date) - julianday(p.dob)) as date_diff -- diff in days
+  --,(julianday(d.dx_date) - julianday(p.dob))/365.25 as date_diff -- diff in years
+  --,round((julianday(d.dx_date) - julianday(p.dob))/365.25, 2) as date_diff -- diff in years
+  --,min(round((julianday(d.dx_date) - julianday(p.dob))/365.25, 2)) as age_min -- age at first dx
+  --,avg(round((julianday(d.dx_date) - julianday(p.dob))/365.25, 2)) as age_mean
+  ,max(round((julianday(v.visit_date) - julianday(p.dob))/365.25, 2)) as age_max  -- age at last dx
+  ,count(v.visit_id)                                                  as visit_count
+FROM patient as p
+  left join visit as v on p.person_id = v.person_id
+  WHERE gender = 'female'
+  and 
+  visit_date is not NULL
+GROUP BY p.person_id, p.dob
+ORDER BY age_max asc
+;
+
+
+
 
 -- Patient + Diagnoses
 -- Q. What diagnosis appears to affect the oldest population (age at the time of diagnosis)
