@@ -1,0 +1,89 @@
+Type,Title/ID,Points,Question Wording,Correct Answer,Choice 1,Choice 2,Choice 3,Choice 4,Choice 5,Choice 6,Choice 7,Choice 8,Choice 9,Choice 10,General Feedback,Correct Feedback,Incorrect Feedback,Feedback 1,Feedback 2,Feedback 3,Feedback 4,Feedback 5,Feedback 6,Feedback 7,Feedback 8,Feedback 9,Feedback 10,Topic,Difficulty Level,Meta 1,Meta 2,Meta 3,Meta 4
+FB,synpuf-homework-04-001,5,"1) How many visits are observed in the care site with the most providers?
+MUST use: count(), distinct, count(*)
+Output dimensions: ?x3
+Output must contain columns: `care_site_id`,'provider_id_count','visit_count'
+",,54,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-04-002,5,"2) How many care sites does the busiest provider (physician) practice at? 
+Hint: ""busiest"" defined as one with the most visits
+MUST use: count(), distinct, count(*)
+Output dimensions: ?x3
+Output must contain columns: `provider_id`,'care_site_id_count','visit_count'
+",,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-04-003,5,"3) How many providers practice at more than 1 care site?
+MUST Use: subquery
+MUST use: count(*), count, distinct, HAVING
+Output dimensions: 1x1
+Output must contain columns: `provider_count`
+",,35,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-04-004,5,"4) What is the age of the oldest male patient at first diagnosis? 
+Hint: calcualte the age of each patient at first diagnosis
+Report age in years, rounded to two decimal places (`age_at_first_dx`)
+Hint: divide the (difference in days between dob and date of first diagnosis) by 365.25 
+Output dimensions: 1x5
+Output must contain columns: `person_id`,`dob`,`dx_date`,`age_at_first_dx`,`dx_count`
+MUST use: julianday(), min(), round()
+",,85.79,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-04-005,5,"5) What is the age of the youngest female patient at last visit ? 
+Hint: calcualte the age of each patient at last visit
+Report age in years, rounded to two decimal places (`age_at_last_visit`)
+Hint: divide the (difference in days between dob and date of last visit) by 365.25
+Output dimensions: 1x5
+Output must contain columns: `person_id`,`dob`,`visit_date`,`age_at_last_visit`,`visit_count`
+MUST use: julianday(), max(), round()
+",,29.62,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-04-006,5,"6) What is the average age of female patients at their last recorded visit? 
+Hint: calcualte the age of each patient at last visit
+Report age in years, rounded to two decimal places (`age_average_at_last_visit`)
+Output dimensions: 1x1
+Output must contain columns: `age_average_at_last_visit`
+MUST use: subquery
+MUST use: julianday(), max(), round(), avg()
+Round `age_average_at_last_visit` to 1 decimal place
+",,74.9,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-04-007,5,"7) What is the second most frequent diagnosis (icd9_description) for patients whose age at the time of diagnosis is 70+ years?
+Hint: some patients might contribute multiple data points
+Output dimensions: 1x3
+Output must contain columns: `icd9_code`, `icd9_description`,`icd9_count`
+MUST use: count(*), cast(), julianday(), LIMIT, OFFSET
+",,Atrial fibrillation,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-04-008,5,"8) What month of observation has the most diverse body of diagnoses? (YYYY-MM)
+Hint: ""diverse"" is defined as the larget number of unique diagnoses (icd9_code)
+Hint: a month is defined as YYYY-MM value
+Hint: use either `strftime()` (for SQLite only) or `substr()` (for SQLite or SQL Server)
+MUST use: substr() OR strftime()
+Output dimensions: x2
+Output must contain columns: `visit_month`, `icd9_count`
+",,2008-08,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-04-009,5,"9) What care_site_id has the most distinct patients?  
+Limit to patients born before 1960 that have at least one dx that includes the term ""diabetes"".  
+Exclude visits with a missing care_site_id.
+MUST use: count(), distinct, like
+Output Dimensions: ?x4
+Output must include columns: `care_site_id`,`patient_count`, `visit_count`,`provider_count`
+The answer must appear in the first row
+",,40,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-04-010,5,"10) What care_site_id has the most distinct visits? 
+Limit to patients born before 1960 that have at least one dx that includes the term ""diabetes"".  
+Exclude visits with a missing care_site_id.
+MUST use: count(), distinct, like
+Output Dimensions: ?x4
+Output must include columns: `care_site_id`,`patient_count`, `visit_count`,`provider_count`
+The answer must appear in the first row
+",,40,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-04-011,5,"11) What care_site_id has the most distinct providers? 
+Limit to patients born before 1960 that have at least one dx that includes the term ""diabetes"".  
+Exclude visits with a missing care_site_id.
+MUST use: count(), distinct, like
+Output Dimensions: ?x4
+Output must include columns: `care_site_id`,`patient_count`, `visit_count`,`provider_count`
+The answer must appear in the first row
+",,7090,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FB,synpuf-homework-04-012,5,"12) In care sites with 50+ visits, what is the highest average patient age at visit? 
+Hint: first compute age at visit, then compute average 
+Hint: a patient with three visits will be counted three times; a patient with one visit will be counted only once.
+Hint: Round `patient_age_mean` to 2 decimal places
+MUST use: avg(), julianday(), HAVING, count(*)
+Output dimensions: ?x3
+Output must contain columns: `care_site_id`, `patient_age_mean`,`visit_count`
+",,73.64,,,,,,,,,,,,,,,,,,,,,,,,,,,,
