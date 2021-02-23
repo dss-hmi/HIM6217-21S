@@ -114,9 +114,54 @@ ds_vt <-
   tibble::as_tibble() %>%
   dplyr::mutate(
     visit_date          = strftime(visit_date, "%Y-%m-%d"),
+    # pt_visit_index      = 
   )%>% 
   dplyr::filter(person_id %in% c(sample_1, sample_3 )) # length(c(sample_1,sample_3))
 ds_vt %>% summarize(n_patient = n_distinct(person_id))
+
+
+
+# ---- simulate-obs ------------------------------------------------------------
+ds_obs_wide <- 
+  ds_pt %>% 
+  dplyr::select(person_id) %>% 
+  dplyr::mutate(
+    height_cm_1   = rnorm(dplyr::n(), mean = 150, sd = 30),
+    weight_kg_1   = rchisq(dplyr::n(), df = 4) * 15,
+    
+    height_cm_2   = height_cm_1 + rnorm(dplyr::n(), 0, .1),
+    weight_kg_2   = weight_kg_1 + rnorm(dplyr::n(), 0,  2),
+    
+    height_cm_3   = height_cm_1 + rnorm(dplyr::n(), 0, .1),
+    weight_kg_3   = weight_kg_1 + rnorm(dplyr::n(), 0,  2),
+    
+    bmi_1         = weight_kg_1 / (.01 * height_cm_1) ^2,
+    bmi_2         = weight_kg_2 / (.01 * height_cm_2) ^2,
+    bmi_3         = weight_kg_3 / (.01 * height_cm_3) ^2,
+  ) %>% 
+  dplyr::mutate(
+    # TODO: add missingness
+  )
+
+ds_obs <-
+  ds_obs_wide %>% 
+  tidyr::pivot_longer(
+    cols          = -person_id,
+    names_to      = c("key", "visit_within_pt_index"),
+    names_pattern = "(.*)_(.*)"
+  ) %>% 
+  dplyr::mutate(
+    visit_within_pt_index   = as.integer(visit_within_pt_index),
+  ) %>% 
+  dplyr::inner_join(
+    ds_vt %>% 
+      dplyr::select(visit_id, person_id, visit_within_pt_index),
+    by = c("person_id", "visit_within_pt_index")
+  ) %>% 
+  dplyr::select(-visit_within_pt_index) %>% 
+  dplyr::arrange(person_id, key, visit_id, value) %>% 
+  tibble::rowid_to_column("observation_id")
+
 
 # ---- verify-values -----------------------------------------------------------
 # OuhscMunge::verify_value_headstart(ds_dx)

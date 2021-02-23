@@ -12,6 +12,7 @@ SELECT
   -- ,v.visit_type_concept_id
   ,v.provider_id
   ,v.care_site_id
+  ,row_number() over (partition by v.person_id order by v.visit_start_date) as visit_within_pt_index
   -- ,v.admitting_source_concept_id
   -- ,v.admitting_source_value
   -- ,v.discharge_to_concept_id
