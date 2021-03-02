@@ -103,7 +103,7 @@ checkmate::assert_character(ds_dx$icd9_code        , any.missing=F , pattern="^.
 checkmate::assert_character(ds_dx$icd9_description , any.missing=F , pattern="^.{2,255}$" )
 checkmate::assert_logical(  ds_dx$inpatient_visit  , any.missing=F                        )
 
-# ---- save-to-db --------------------------------------------------------------
+# ---- save-to-sqlite-db --------------------------------------------------------------
 # If there's *NO* PHI, a local database like SQLite fits a nice niche if
 #   * the data is relational and
 #   * later, only portions need to be queried/retrieved at a time (b/c everything won't need to be loaded into R's memory)
@@ -165,3 +165,25 @@ dto <- list(
   "ds_pt" = ds_pt # patient
   ,"ds_dx" = ds_dx # diagnosis
 )
+
+# ---- save-to-sqlserver-db -------------
+# If a database already exists, this single function uploads to a SQL Server database.
+OuhscMunge::upload_sqls_odbc(
+  d             = ds_pt,
+  schema_name   = "dflt",         # Or config$schema_name,
+  table_name    = "patient",
+  dsn_name      = "omop_synpuf_1", # Or config$dsn_qqqqq,
+  # timezone      = config$time_zone_local, # Uncomment if uploading non-UTC datetimes
+  clear_table   = T,
+  create_table  = T # after initial T and tweaking columns properties in SQLServer, keep it as F, because it will overwrite
+) # 0.012 minutes
+OuhscMunge::upload_sqls_odbc(
+  d             = ds_dx,
+  schema_name   = "dflt",         # Or config$schema_name,
+  table_name    = "dx",
+  dsn_name      = "omop_synpuf_1", # Or config$dsn_qqqqq,
+  # timezone      = config$time_zone_local, # Uncomment if uploading non-UTC datetimes
+  clear_table   = T,
+  create_table  = T # after initial T and tweaking columns properties in SQLServer, keep it as F, because it will overwrite
+) # 0.012 minutes
+
