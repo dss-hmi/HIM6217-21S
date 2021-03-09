@@ -11,8 +11,7 @@
 SELECT
  count(distinct v.care_site_id) as cs_count
 FROM patient as p
-INNER JOIN visit as v
-  ON  p.person_id = v.person_id
+  inner join visit as v on p.person_id = v.person_id
 WHERE p.gender = "female"
 ;
 
@@ -24,8 +23,7 @@ FROM
    SELECT
      v.care_site_id
    FROM patient as p
-   INNER JOIN visit as v
-     ON p.person_id = v.person_id
+     inner join visit as v on p.person_id = v.person_id
    WHERE p.gender = "female"
     
   )
@@ -33,12 +31,11 @@ FROM
 
 -- Version 3: Common Table Expression (CTE)
 with cte_cs as(
-   SELECT
-     v.care_site_id
-   FROM patient as p
-   INNER JOIN visit as v
-     ON p.person_id = v.person_id
-   WHERE p.gender = "female"
+  SELECT
+    v.care_site_id
+  FROM patient as p
+    inner join visit as v on p.person_id = v.person_id
+  WHERE p.gender = "female"
 )
 SELECT 
   count(distinct care_site_id) as cs_count
