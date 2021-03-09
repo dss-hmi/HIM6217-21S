@@ -15,6 +15,7 @@ library("dplyr"                      )
 requireNamespace("checkmate"                  )
 requireNamespace("testit"                     )
 requireNamespace("config"                     )
+requireNamespace("babynames"                  )
 requireNamespace("TeachingDemos"              )
 requireNamespace("OuhscMunge"                 )  # remotes::install_github("OuhscBbmc/OuhscMunge")
 
@@ -109,7 +110,7 @@ ds_pt <-
   ds_pt %>% 
   tibble::as_tibble() %>%
   dplyr::mutate(
-    dob                 = strftime(dob, "%Y-%m-%d"),
+    dob                 = strftime(dob, "%Y-%m-%d"), # Convert to string for SQLite
   )%>% 
   # dplyr::filter(person_id %in% c(sample_1, sample_2, sample_3, sample_4))# length(c(sample_1,sample_2, sample_3, sample_4))
   dplyr::filter(person_id %in% c(sample_1))# length(c(sample_1,sample_2, sample_3, sample_4))
@@ -119,7 +120,7 @@ ds_dx <-
   ds_dx %>% 
   tibble::as_tibble() %>%
   dplyr::mutate(
-    dx_date             = strftime(dx_date, "%Y-%m-%d"),
+    dx_date             = strftime(dx_date, "%Y-%m-%d"), # Convert to string for SQLite
     icd9_description    = OuhscMunge::deterge_to_ascii(icd9_description)
   )%>% 
   # dplyr::filter(person_id %in% c(sample_1, sample_2 )) # length(c(sample_1,sample_2))
@@ -130,7 +131,7 @@ ds_vt <-
   ds_vt %>% 
   tibble::as_tibble() %>%
   dplyr::mutate(
-    visit_date          = strftime(visit_date, "%Y-%m-%d"),
+    visit_date          = strftime(visit_date, "%Y-%m-%d"), # Convert to string for SQLite
     # pt_visit_index      = 
   )%>% 
   # dplyr::filter(person_id %in% c(sample_1, sample_3 )) # length(c(sample_1,sample_3))
@@ -237,40 +238,40 @@ ds_obs %>% summarize(person_count = n_distinct(person_id))
 ds_vt <- ds_vt %>% select(-visit_within_pt_index)
 # ---- verify-values -----------------------------------------------------------
 # OuhscMunge::verify_value_headstart(ds_pt)
-checkmate::assert_integer(  ds_pt$person_id , any.missing=F , lower=208, upper=1024 , unique=T)
+checkmate::assert_integer(  ds_pt$person_id , any.missing=F , lower=1, upper=9999 , unique=T)
 checkmate::assert_character(ds_pt$dob       , any.missing=F , pattern="^.{10,10}$"  )
-checkmate::assert_character(ds_pt$gender    , any.missing=F , pattern="^.{4,6}$"    )
-checkmate::assert_character(ds_pt$race      , any.missing=F , pattern="^.{5,25}$"   )
-checkmate::assert_character(ds_pt$ethnicity , any.missing=F , pattern="^.{22,22}$"  )
+checkmate::assert_character(ds_pt$gender    , any.missing=F , pattern="^.{4,10}$"    )
+checkmate::assert_character(ds_pt$race      , any.missing=T , pattern="^.{5,25}$"   )
+checkmate::assert_character(ds_pt$ethnicity , any.missing=F , pattern="^.{1,25}$"  )
 
 # OuhscMunge::verify_value_headstart(ds_dx)
-checkmate::assert_integer(  ds_dx$dx_id            , any.missing=F , lower=28397, upper=136830 , unique=T)
-checkmate::assert_integer(  ds_dx$person_id        , any.missing=F , lower=208, upper=1024     )
+checkmate::assert_integer(  ds_dx$dx_id            , any.missing=F , lower=1, upper=999999 , unique=T)
+checkmate::assert_integer(  ds_dx$person_id        , any.missing=F , lower=1, upper=9999     )
 checkmate::assert_character(ds_dx$dx_date          , any.missing=F , pattern="^.{10,10}$"      )
-checkmate::assert_character(ds_dx$icd9_code        , any.missing=F , pattern="^.{3,6}$"        )
-checkmate::assert_character(ds_dx$icd9_description , any.missing=F , pattern="^.{6,171}$"      )
-checkmate::assert_integer(  ds_dx$visit_id         , any.missing=F , lower=10554, upper=51323  )
+checkmate::assert_character(ds_dx$icd9_code        , any.missing=F , pattern="^.{1,8}$"        )
+checkmate::assert_character(ds_dx$icd9_description , any.missing=F , pattern="^.{1,255}$"      )
+checkmate::assert_integer(  ds_dx$visit_id         , any.missing=F , lower=1, upper=99999  )
 
 # OuhscMunge::verify_value_headstart(ds_vt)
-checkmate::assert_integer(  ds_vt$visit_id              , any.missing=F , lower=10554, upper=51323 , unique=T)
-checkmate::assert_integer(  ds_vt$person_id             , any.missing=F , lower=208, upper=1024    )
+checkmate::assert_integer(  ds_vt$visit_id              , any.missing=F , lower=1, upper=99999 , unique=T)
+checkmate::assert_integer(  ds_vt$person_id             , any.missing=F , lower=1, upper=9999    )
 checkmate::assert_character(ds_vt$visit_date            , any.missing=F , pattern="^.{10,10}$"     )
-checkmate::assert_integer(  ds_vt$provider_id           , any.missing=F , lower=16, upper=37370    )
-checkmate::assert_integer(  ds_vt$care_site_id          , any.missing=F , lower=13, upper=21838    )
+checkmate::assert_integer(  ds_vt$provider_id           , any.missing=T , lower=1, upper=99999    )
+checkmate::assert_integer(  ds_vt$care_site_id          , any.missing=T , lower=1, upper=99999    )
 
 # OuhscMunge::verify_value_headstart(ds_cs)
-checkmate::assert_integer(  ds_cs$care_site_id     , any.missing=F , lower=13, upper=21838 , unique=T)
-checkmate::assert_character(ds_cs$place_of_service , any.missing=F , pattern="^.{18,19}$"  )
-checkmate::assert_character(ds_cs$care_site_name   , any.missing=F , pattern="^.{18,33}$"  , unique=T)
-checkmate::assert_character(ds_cs$state            , any.missing=F , pattern="^.{4,14}$"   )
-checkmate::assert_numeric(  ds_cs$bed_count        , any.missing=F , lower=5, upper=458    )
+checkmate::assert_integer(  ds_cs$care_site_id     , any.missing=F , lower=1, upper=99999 , unique=T)
+checkmate::assert_character(ds_cs$place_of_service , any.missing=F , pattern="^.{1,50}$"  )
+checkmate::assert_character(ds_cs$care_site_name   , any.missing=F , pattern="^.{1,50}$"  , unique=F)
+checkmate::assert_character(ds_cs$state            , any.missing=F , pattern="^.{1,25}$"   )
+checkmate::assert_numeric(  ds_cs$bed_count        , any.missing=F , lower=1, upper=999    )
 
 # OuhscMunge::verify_value_headstart(ds_obs)
-checkmate::assert_integer(  ds_obs$observation_id , any.missing=F , lower=1, upper=90        , unique=T)
-checkmate::assert_integer(  ds_obs$person_id      , any.missing=F , lower=208, upper=1024    )
-checkmate::assert_character(ds_obs$key            , any.missing=F , pattern="^.{3,9}$"       )
-checkmate::assert_numeric(  ds_obs$value          , any.missing=F , lower=2, upper=218       , unique=T)
-checkmate::assert_integer(  ds_obs$visit_id       , any.missing=F , lower=10564, upper=51307 )
+checkmate::assert_integer(  ds_obs$observation_id , any.missing=F , lower=1, upper=999        , unique=T)
+checkmate::assert_integer(  ds_obs$person_id      , any.missing=F , lower=1, upper=9999    )
+checkmate::assert_character(ds_obs$key            , any.missing=F , pattern="^.{1,15}$"       )
+checkmate::assert_numeric(  ds_obs$value          , any.missing=F , lower=1, upper=999       , unique=F)
+checkmate::assert_integer(  ds_obs$visit_id       , any.missing=F , lower=1, upper=99999 )
 
 # ---- save-to-db --------------------------------------------------------------
 # If there's *NO* PHI, a local database like SQLite fits a nice niche if
@@ -285,9 +286,9 @@ sql_create <- c(
     CREATE TABLE `patient` (
       person_id   integer       primary key,
       dob         date          not null,
-      gender      varchar(50)       null,
-      race        varchar(50)       null,
-      ethnicity   varchar(50)       null
+      gender      varchar(10)   not null,
+      race        varchar(25)       null,
+      ethnicity   varchar(25)   not null
     );
   ",
   "
@@ -297,10 +298,10 @@ sql_create <- c(
     CREATE TABLE `dx` (
       dx_id            integer       primary key,
       person_id        integer       not null,
-      visit_id         integer  not null,
+      visit_id         integer       not null,
       dx_date          date          not null,
-      icd9_code        varchar(10)   not null,
-      icd9_description varchar(250)   not null
+      icd9_code        varchar(8)    not null,
+      icd9_description varchar(255)  not null
     );
   ",
   "
@@ -311,8 +312,8 @@ sql_create <- c(
       visit_id            integer       primary key,
       person_id           integer       not null,
       visit_date          date          not null,
-      provider_id         integer               ,
-      care_site_id        integer       
+      provider_id         integer           null,
+      care_site_id        integer           null
     );
   ",
   "
@@ -321,10 +322,10 @@ sql_create <- c(
   "
     CREATE TABLE `care_site` (
       care_site_id       integer            primary key,
-      care_site_name     varchar(150)       ,
-      place_of_service   varchar(150)       ,
-      state              integer            ,
-      bed_count          integer       
+      care_site_name     varchar(50)        not null,
+      place_of_service   varchar(50)        not null,
+      state              varchar(25)        not null,
+      bed_count          integer            not null
     );
   ",
   "
@@ -335,8 +336,8 @@ sql_create <- c(
       observation_id     integer        primary key,
       person_id          integer        not null,
       visit_id           integer        not null,
-      key                varchar(10)             ,
-      value              double       
+      key                varchar(15)    not null,
+      value              double         not null
     );
   "
 )
