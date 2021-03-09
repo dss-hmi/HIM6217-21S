@@ -2,10 +2,10 @@
 SELECT
   v.visit_occurrence_id as visit_id
   ,v.person_id
-  ,case
-    when v.visit_concept_id = 0 then null
-    else                             cv.concept_name
-  end                                                   as visit_category
+  --,case
+  --  when v.visit_concept_id = 0 then null
+  --  else                             cv.concept_name
+  --end                                                   as visit_category
   -- ,v.visit_concept_id                                   as visit_category_concept_id
   ,v.visit_start_date as visit_date
   -- ,cvt.concept_name
