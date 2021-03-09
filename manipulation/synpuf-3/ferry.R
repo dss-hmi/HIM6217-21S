@@ -378,6 +378,8 @@ dto <- list(
 )
 
 # ---- save-to-sqlserver-db -------------
+# make sure all options from  (below) are enabled
+# https://ouhscbbmc.github.io/data-science-practices-1/workstation.html#workstation-ssms
 # If a database already exists, this single function uploads to a SQL Server database.
 OuhscMunge::upload_sqls_odbc(
   d             = ds_pt,
