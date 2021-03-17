@@ -24,6 +24,7 @@ requireNamespace("OuhscMunge"                 )  # remotes::install_github("Ouhs
 # config      <- config::get()
 dsn                   <- "omop_synpuf"
 path_db_1             <- "data-public/exercises/synpuf/synpuf_3.sqlite3"
+# path_db_1             <- "data-public/exercises/synpuf/synpuf_3_small.sqlite3"
 path_sql_pt           <- "manipulation/synpuf-3/pt.sql"
 path_sql_dx           <- "manipulation/synpuf-3/dx.sql"
 path_sql_vt           <- "manipulation/synpuf-3/visit.sql"
@@ -178,6 +179,7 @@ ds_cs <-
       ((place_of_service == "Office") & (prob <=.15)) ~ "Inpatient Hospital",
       TRUE ~ place_of_service
     )
+    ,bed_count = ifelse(place_of_service=="Inpatient Hospital",0, bed_count)
   ) %>% 
   select(-prob)
 
@@ -217,7 +219,7 @@ ds_obs <-
   ds_obs_wide %>% 
   tidyr::pivot_longer(
     cols          = -person_id,
-    names_to      = c("key", "visit_within_pt_index"),
+    names_to      = c("measure", "visit_within_pt_index"),
     names_pattern = "(.*)_(.*)"
   ) %>% 
   dplyr::mutate(
@@ -229,7 +231,7 @@ ds_obs <-
     by = c("person_id", "visit_within_pt_index")
   ) %>% 
   dplyr::select(-visit_within_pt_index) %>% 
-  dplyr::arrange(person_id, key, visit_id, value) %>% 
+  dplyr::arrange(person_id, measure, visit_id, value) %>% 
   tibble::rowid_to_column("observation_id") %>% 
   select(observation_id, person_id, visit_id, everything())
 
@@ -336,7 +338,7 @@ sql_create <- c(
       observation_id     integer        primary key,
       person_id          integer        not null,
       visit_id           integer        not null,
-      key                varchar(15)    not null,
+      measure                varchar(15)    not null,
       value              double         not null
     );
   "
