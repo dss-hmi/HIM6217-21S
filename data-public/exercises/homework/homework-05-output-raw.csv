@@ -1,0 +1,40 @@
+Question Wording,Choice 1,Title/ID
+"1) What gender made the most outpatient visits? 
+CTE must return table with columns: visit_id, gender, place_of_service
+Output dimensions: 2x3
+Output must contain columns: gender, place_of_service, visit_count
+Answer must appear in the first row
+",female,synpuf-homework-05-001
+"2) What provider (provider_id) works in the most states? 
+CTE must return a table with three columns: provider_id, care_site_id, state
+NULL is not a provider
+Output dimensions: ?x2
+Output must contain columns: state_count, provider_id
+Answer must appear in the first row
+",6083,synpuf-homework-05-002
+"3) What is the average height of females at the their last known height observation? 
+CTE must produce table with 3 columns: person_id, visit_id, max_date
+Output dimensions: 1x1
+Output must contain a single column: avg_height_cm
+",144.9,synpuf-homework-05-003
+"4) What state has the most diverse body of diagnoses (icd9_code)? 
+CTE must return a table with two columns: visit_id, state
+Output dimensions: ?x2
+Output must contain columns: state, dx_count
+Answer must appear in the first row
+",California,synpuf-homework-05-004
+"5) What state has the highest average number of visits per patient?
+CTE must return a table with three columns: visit_id, person_id, state
+Output dimensions: ?x4
+Output must contain columns: state, visit_count, person_count, visit_per_person
+MUST use: cast
+visit_per_person must be a floating decimal, not integer
+",California,synpuf-homework-05-005
+"6) What state has the highest ratio of outpatient to inpatient hospitals? 
+CTE must return a table with columns: state, inpatient_care_count
+Output dimensions: ?x4
+Output must contain columns: state, outpatient_care_site_count, inpatient_care_site_count, out_in_ratio
+MUST use: with, cast
+visit_per_person must be a floating decimal, not integer
+Answer must appear in the first row
+",Arkansas,synpuf-homework-05-006
