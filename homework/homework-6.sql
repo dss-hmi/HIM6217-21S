@@ -1,197 +1,238 @@
 -- Homework 6
 -- All questions target the database `synpuf_3`
--- Note 1: When asking about the "number of patients" it is implied that patients are unique
--- Note 2: the "MUST use" requirement may not contain ALL the necessary keywords to complete the task
--- Note 3: If not explicitly forbidden in "must NOT use" requirement, any keywords can be used
--- Note 4: The uniqueness of the diagnosis is defined by its icd9_code, not icd9_description (e.g. 234.9 and 234.99 are not the same)
+-- All queries must be executable in SQL Server Microsoft Studio
+-- You do not need to enter the answeres anywhere, you will be graded on the output of your queries
 
-
--- Version 1: Using a Regular Query
-SELECT
- count(distinct v.care_site_id) as cs_count
-FROM patient as p
-  inner join visit as v on p.person_id = v.person_id
-WHERE p.gender = "female"
-;
-
--- Version 2: Using a Subquery
-SELECT
- count(distinct care_site_id) as cs_count
-FROM 
-  (
-   SELECT
-     v.care_site_id
-   FROM patient as p
-     inner join visit as v on p.person_id = v.person_id
-   WHERE p.gender = "female"
-    
-  )
-;
-
--- Version 3: Using a Common Table Expression (CTE)
-with cte_cs as(
-  SELECT
-    v.care_site_id
-  FROM patient as p
-    inner join visit as v on p.person_id = v.person_id
-  WHERE p.gender = "female"
-)
+-- Homework 1;
+-- 7) How many patients are in the largest race category?
+-- Output dimensions: 1x2
 SELECT 
-  count(distinct care_site_id) as cs_count
-FROM cte_cs
+DISTINCT TOP 1 p.race
+,COUNT(*) AS person_count
+FROM patient AS P
+GROUP BY P.race
+ORDER BY count(*) desc
 ;
 
 
--- 1) What gender made the most outpatient visits? 
--- CTE must return table with columns: visit_id, gender, place_of_service
--- Output dimensions: 2x3
--- Output must contain columns: gender, place_of_service, visit_count
--- Answer must appear in the first row
-with cte as (
-  SELECT 
-    v.visit_id, p.gender, cs.place_of_service
-  FROM visit v
-    inner join patient p on v.person_id = p.person_id
-    inner join care_site cs on v.care_site_id = cs.care_site_id
-)
-SELECT
-  gender, place_of_service,
-  count(distinct visit_id) as visit_count
-FROM cte
-WHERE place_of_service = 'Outpatient Hospital'
-GROUP BY gender, place_of_service
-ORDER BY visit_count desc
+-- 8) How many patients are in the smallest ethnicity category?
+-- Output dimensions: 1x2
+SELECT  distinct top  1 ethnicity, count(*) as n_patients
+FROM patient
+GROUP BY ethnicity
+ORDER BY n_patients asc
 ;
--- female
 
 
--- 2) What provider (provider_id) works in the most states? 
--- CTE must return a table with three columns: provider_id, care_site_id, state
--- NULL is not a provider
--- Output dimensions: ?x2
--- Output must contain columns: state_count, provider_id
--- Answer must appear in the first row
-with cte as(
-  SELECT  v.provider_id, v.care_site_id, cs.state
-  FROM visit as v
-    inner join care_site as cs on v.care_site_id = cs.care_site_id
-  WHERE v.provider_id is not NULL
-)
-SELECT
-  provider_id -- because it's the grain of the table
-  ,count(distinct state) as state_count
-FROM cte
-GROUP BY provider_id
-ORDER BY state_count desc, provider_id asc
+-- 9) How many white females are in the patient table? 
+-- must include gender and race columns
+-- Output dimensions: 1x3
+SELECT 
+gender, race
+, count(*) as n_patients
+FROM patient
+WHERE (gender = 'female') AND (race = 'white')
+group by gender, race
 ;
--- 6083
 
--- 3) What is the average height of females at the their last known height observation? 
--- CTE must produce table with 3 columns: person_id, visit_id, max_date
+
+
+-- 13) How many non-white females were born prior to 1945?
 -- Output dimensions: 1x1
--- Output must contain a single column: avg_height_cm
-with last_obs as(
-  SELECT  o.person_id, o.visit_id, max(visit_date) as max_date
-  FROM observation o left join visit v on 
-    o.person_id = v.person_id 
-    and 
-    o.visit_id = v.visit_id
-  GROUP BY o.person_id
-)
+SELECT count(*) AS patient_count
+FROM patient
+WHERE
+  (gender = 'female' AND race != 'white')
+  AND
+  (dob < '1945-01-01')
+;
+
+-- 14) How many white males were born after 1925?
+-- output must contain fields: gender, race, patient_count
+SELECT 
+gender
+,race
+,count(*) as patient_count
+FROM patient
+WHERE dob > '1925-12-31' 
+GROUP BY gender, race
+;
+
+
+
+-- Homework 2
+
+-- 8) What diagnosis code is most prevalent (i.e appears in the greatest number of records)? 
+-- Output dimensions: 1x3
+-- Output contains columns: n_dx, icd9_code, icd9_description
+SELECT top 1 count(*) as n_dx, icd9_code, icd9_description
+FROM dx
+GROUP BY icd9_code, icd9_description
+ORDER BY n_dx desc
+;
+
+
+-- 9) What is the greatest number of distinct patients with the same diagnosis? 
+-- Output dimensions: 1x3
+-- Output contains columns: n_patients, icd9_code, icd9_description
+SELECT top 1 count(distinct(person_id)) as n_patients, icd9_code, icd9_description
+FROM dx
+GROUP BY icd9_code, icd9_description
+ORDER BY n_patients desc
+;
+
+
+-- 10) What is the larger number of unique diagnoses (icd9_codes)  that can be observed in one person?
+-- Output dimensions: 1x2
+-- Output must contain columns: person_id, n_unique_dx
+SELECT top 1 person_id, count(distinct(icd9_code)) as n_unique_dx
+FROM dx
+GROUP BY person_id
+ORDER BY n_unique_dx DESC
+;
+
+
+-- 13) What is the icd9_code of the diagnosis with the longest label (icd9_description)
+-- Output dimensions: 1x3
+-- Output must contain columns: icd9_description, icd9_code, n_char
+SELECT top 1 icd9_description,icd9_code,
+len(icd9_description) as n_char
+FROM dx
+ORDER BY n_char DESC
+;
+
+
+
+-- Homework 3
+
+-- 12) What is the difference (in absolute value) between the number of persons in `patient` table
+-- and the number of persons in the `dx` table?
+-- Output dimensions: 1x3
+-- Output must contain columns: `n_person_patient`, `n_person_dx`, `n_diff`
+SELECT 
+count(distinct(a.person_id)) as person_count_patient
+,count(distinct(b.person_id)) as person_count_dx
+,abs(count(distinct(b.person_id)) - count(distinct(a.person_id))) as difference_count
+FROM patient as a
+LEFT join dx as b on a.person_id = b.person_id
+;
+
+
+
+-- Homework 4
+
+-- 4) What is the age of the oldest male patient at first diagnosis? 
+-- Hint: calcualte the age of each patient at first diagnosis
+-- Report age in years, rounded to two decimal places (`age_at_first_dx`)
+-- Hint: divide the (difference in days between dob and date of first diagnosis) by 365.25 
+-- Output dimensions: 1x5
+-- Output must contain columns: `person_id`,`dob`,`age_at_first_dx`,`dx_count`
 SELECT
-  round(avg(o.value),1) as avg_height_cm
-FROM patient p
- inner join observation o  on 
-   p.person_id = o.person_id
- inner join last_obs as lo on 
-   p.person_id = lo.person_id 
-   and 
-   o.visit_id  = lo.visit_id 
+  p.person_id
+  ,p.dob
+  ,min(round((datediff(day, p.dob,d.dx_date) )/365.25, 2)) as age_at_first_dx -- age at first dx
+  ,count(d.dx_id)                                           as dx_count
+FROM patient as p
+  left join dx as d on p.person_id = d.person_id
+  WHERE gender = 'male'
+GROUP BY p.person_id, p.dob
+ORDER BY age_at_first_dx desc
+;
+
+-- 5) What is the age of the youngest female patient at last visit ? 
+-- Hint: calcualte the age of each patient at last visit
+-- Report age in years, rounded to two decimal places (`age_at_last_visit`)
+-- Hint: divide the (difference in days between dob and date of last visit) by 365.25
+-- Output dimensions: 1x5
+-- Output must contain columns: `person_id`,`dob`,`age_at_last_visit`,`visit_count`
+SELECT
+  p.person_id
+  ,p.dob
+  --,v.visit_date
+  ,max(round((datediff(day, p.dob,v.visit_date))/365.25, 2)) as age_at_last_visit  -- age at last dx
+  ,count(v.visit_id)                                                  as visit_count
+FROM patient as p
+  left join visit as v on p.person_id = v.person_id
 WHERE 
-  o.measure = 'height_cm'  
+  gender = 'female'
   and 
-  p.gender = 'female'
+  visit_date is not NULL
+GROUP BY p.person_id, p.dob
+ORDER BY age_at_last_visit asc
 ;
---144.9
 
-
-
-
-
--- 4) What state has the most diverse body of diagnoses (icd9_code)? 
--- CTE must return a table with two columns: visit_id, state
--- Output dimensions: ?x2
--- Output must contain columns: state, dx_count
--- Answer must appear in the first row
-with cte as(
-  SELECT  distinct v.visit_id, cs.state
-  FROM visit as v
-    inner join  care_site as cs on 
-      v.care_site_id = cs.care_site_id
-)
-SELECT 
-  cte.state
-  ,count(distinct icd9_code) as dx_count
-FROM dx as d
-  inner join cte on 
-    dx.visit_id = cte.visit_id
-GROUP BY cte.state 
-ORDER BY dx_count desc
-;
--- California
-
-
--- 5) What state has the highest average number of visits per patient?
--- CTE must return a table with three columns: visit_id, person_id, state
--- Output dimensions: ?x4
--- Output must contain columns: state, visit_count, person_count, visit_per_person
--- MUST use: cast
--- visit_per_person must be a floating decimal, not integer
--- Consider re-writing as a single query
-with cte as(
-  SELECT
-    v.visit_id
-   ,v.person_id
-   ,cs.state
-  FROM visit as v
-    inner join care_site as cs on 
-      v.care_site_id = cs.care_site_id
-)
-SELECT
-  state
-  ,count(distinct visit_id) as visit_count
-  ,count(distinct person_id) as person_count
-  ,cast(count(distinct visit_id) as float)/count(distinct person_id) as visit_per_person
+-- 6) What is the average age of female patients at their last recorded visit? 
+-- Hint: calcualte the age of each patient at last visit
+-- Report age in years, rounded to 1 decimal place (`age_average_at_last_visit`)
+-- Output dimensions: 1x1
+-- Output must contain columns: `age_average_at_last_visit`
+-- MUST use: WITH()
+-- Round `age_average_at_last_visit` to 1 decimal place
+with cte as (
+   SELECT
+      p.person_id
+      ,p.dob
+      --,v.visit_date
+      ,max(( datediff(day, p.dob,v.visit_date) )/365.25) as age_max  -- age at last dx
+      ,count(v.visit_id)                                        as visit_count
+    FROM patient as p
+      left join visit as v on p.person_id = v.person_id
+    WHERE 
+      gender = 'female'
+      and 
+      visit_date is not NULL
+    GROUP BY p.person_id, p.dob
+	)
+	SELECT 
+  round(avg(age_max),1) as age_average_at_last_visit
 FROM cte
-GROUP BY state
-ORDER BY visit_per_person desc
-;
--- California
 
--- 6) What state has the highest ratio of outpatient to inpatient hospitals? 
--- CTE must return a table with columns: state, inpatient_care_count
--- Output dimensions: ?x4
--- Output must contain columns: state, outpatient_care_site_count, inpatient_care_site_count, out_in_ratio
--- MUST use: with, cast
--- visit_per_person must be a floating decimal, not integer
--- Answer must appear in the first row
-with cte as(
-  SELECT 
-    state
-    ,count(distinct care_site_id) as inpatient_care_site_count
-  FROM care_site
-  WHERE place_of_service = 'Inpatient Hospital'
-  GROUP BY state, place_of_service
-) 
-SELECT 
-  cs.state
-  ,count(distinct cs.care_site_id) as care_site_count
-  ,coalesce(cte.inpatient_care_site_count, 0) as inpatient_care_site_count
-  ,coalesce(cte.inpatient_care_site_count, 0) / cast(count(distinct cs.care_site_id) as float)  as in_patient_prop
-  
-FROM care_site as cs
-  left join cte on cs.state = cte.state
-GROUP BY cs.state
-ORDER BY in_patient_prop desc
+-- 7) What is the second most frequent diagnosis (icd9_description) for patients whose age at the time of diagnosis is 70+ years?
+-- Hint: some patients might contribute multiple data points
+-- Output dimensions: 1x3
+-- Output must contain columns: `icd9_code`, `icd9_description`,`icd9_count`
+SELECT
+  icd9_code
+  ,icd9_description
+  ,count(*)           as icd9_count
+FROM dx d
+  left  join patient pt on d.person_id = pt.person_id
+WHERE 
+  --70 <= cast(datediff(day, pt.dob,d.dx_date) / 365.25 as int)
+   70 <= floor(datediff(day, pt.dob, d.dx_date) / 365.25)
+GROUP BY icd9_code, icd9_description
+ORDER BY count(*) desc
+offset 1 rows
+Fetch first 1 rows only;
+
+- 8) What month of observation has the most diverse body of diagnoses? (YYYY-MM)
+-- Hint: "diverse" is defined as the larget number of unique diagnoses (icd9_code)
+-- Hint: a month is defined as YYYY-MM value
+-- Output dimensions: x2
+-- Output must contain columns: `visit_month`, `icd9_count`
+SELECT
+  substring(v.visit_date, 1, 7)       as visit_month_alt 
+ ,count( distinct d.icd9_code) as icd9_count
+FROM visit as v
+left join dx as d
+on v.person_id = d.person_id
+group by substring(v.visit_date, 1, 7) 
+order by icd9_count desc
 ;
--- Arkansas
+
+-- 12) In care sites with 50+ visits, what is the highest average patient age at visit?
+-- Hint: first compute age at visit, then compute average 
+-- Hint: a patient with three visits will be counted three times; a patient with one visit will be counted only once.
+-- Hint: Round `patient_age_mean` to 2 decimal places
+-- Output dimensions: ?x3
+-- Output must contain columns: `care_site_id`, `patient_age_mean`,`visit_count`
+SELECT
+  v.care_site_id
+  ,round(avg(datediff(day, pt.dob, v.visit_date) /365.25),2) as patient_age_mean
+  ,count(*)                                                           as visit_count
+FROM visit v
+  left  join patient pt on v.person_id = pt.person_id
+GROUP BY v.care_site_id
+HAVING 50 <= count(*) 
+ORDER BY patient_age_mean desc
+;
