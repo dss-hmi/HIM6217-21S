@@ -23,3 +23,17 @@ Repository to accompany Health Care Database Managements (HIM6217) course at the
 [solution4]:homework/homework-4.sql
 [solution5]:homework/homework-5.sql
 [solution6]:homework/homework-6.sql 
+
+# Data
+
+Homework rely on synthetic data bases inspired by the [Medicare Claims Synthetic Public Use Files (SynPUFs)](https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs). For the scripts generating and augmenting these synthetic data bases see [./manipulation/](./manipulation) folder.
+
+- [hmo-1][hmo-1] 
+- [synpuf_1][synpuf_1] 
+- [synpuf_2][synpuf_2] 
+- [synpuf_3][synpuf_3] 
+
+[hmo-1]:data-public/exercises/hmo-1.sqlite3
+[synpuf_1]:data-public/exercises/synpuf/synpuf_1.sqlite3
+[synpuf_2]:data-public/exercises/synpuf/synpuf_2.sqlite3
+[synpuf_3]:data-public/exercises/synpuf/synpuf_3.sqlite3
