@@ -146,7 +146,7 @@ items:
       Hint: some patients might contribute multiple data points
       Output dimensions: 1x3
       Output must contain columns: `icd9_code`, `icd9_description`,`icd9_count`
-      MUST use: count(*), cast(), julianday(), LIMIT, OFFSET
+      MUST use: count(*), julianday(), LIMIT, OFFSET
     code: | 
       SELECT
         icd9_code
