@@ -7,13 +7,15 @@ Repository to accompany Health Care Database Managements (HIM6217) course at the
 
 |   |   |
 |---|---|
-|![][forta]   |   |
-|![][nield]    |   |
-|![][sqlbolt]   |   |
+|![][nield] |Nield, T. (2016). Getting started with SQL: A Hands-On Approach for Beginners. O’Reilly.[link][nieldlink]   |
+|![][sqlbolt] |  https://sqlbolt.com/  |
+|![][forta] |Forta, B. (2019). SQL in 10 Minutes a Day, Sams Teach Yourself. Sams Publishing.[link][fortalink]   |
 
 [forta]:libs/images/forta.PNG   
 [nield]:libs/images/nield.png      
 [sqlbolt]:libs/images/sqlbolt.png
+[nieldlink]:https://www.amazon.com/Getting-Started-SQL-Hands-Beginners-ebook-dp-B01BO7HPNC/dp/B01BO7HPNC/ref=mt_other?_encoding=UTF8&me=&qid=
+[fortalink]:https://forta.com/books/0135182794/
 
 
 # Homework 
