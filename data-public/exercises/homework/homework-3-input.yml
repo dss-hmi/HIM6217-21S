@@ -237,7 +237,7 @@ items:
       GROUP BY visit_category 
       ORDER BY mean_visit_count desc
       ;
-    pull_column: "mean_visit_count"
+    pull_column: "visit_category"
     pull_row: 1  
   -
     prompt: |
@@ -339,7 +339,7 @@ items:
       20) How many NULL values does the column `visit_category` contain? 
       Write the query that counts the number of NULL values in each column of the `visit` table
       Must use: COUNT
-      Must NOT use: SUM, CASE WHEN, NULL
+      Must NOT use: SUM, CASE WHEN, NULL, WHERE
       Output dimensions: 1x6
       Output must contain columns:
       `visit_id_null_count`,`person_id_null_count`,`visit_category_null_count`,`visit_date_null_count`,`provider_id_null_count`,`care_site_id_null_count`
