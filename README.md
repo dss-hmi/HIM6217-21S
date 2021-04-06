@@ -1,6 +1,12 @@
 # HIM6217-21S
 Repository to accompany Health Care Database Managements (HIM6217) course at the University of Central Florida in the Spring of 2021
 
+![banner](./libs/images/class-banner-light.png)
+
+# Texts
+
+
+
 # Homework 
 
 - [Homework 1][hm1] ([solution][solution1])
@@ -37,3 +43,4 @@ Homework rely on synthetic data bases inspired by the [Medicare Claims Synthetic
 [synpuf_1]:data-public/exercises/synpuf/synpuf_1.sqlite3
 [synpuf_2]:data-public/exercises/synpuf/synpuf_2.sqlite3
 [synpuf_3]:data-public/exercises/synpuf/synpuf_3.sqlite3
+
