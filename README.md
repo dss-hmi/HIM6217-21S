@@ -5,6 +5,15 @@ Repository to accompany Health Care Database Managements (HIM6217) course at the
 
 # Texts
 
+|   |   |
+|---|---|
+|![][forta]   |   |
+|![][nield]    |   |
+|![][sqlbolt]   |   |
+
+[forta]:libs/images/forta.PNG   
+[nield]:libs/images/nield.png      
+[sqlbolt]:libs/images/sqlbolt.png
 
 
 # Homework 
