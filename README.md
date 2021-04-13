@@ -55,3 +55,16 @@ Homework rely on synthetic data bases inspired by the [Medicare Claims Synthetic
 [synpuf_2]:data-public/exercises/synpuf/synpuf_2.sqlite3
 [synpuf_3]:data-public/exercises/synpuf/synpuf_3.sqlite3
 
+# Template of Instructions to Outsiders
+
+> I'm glad you’d like to learn sql & databases in general  --it's a big part of what we do as statisticians/analysts.
+>
+> The easiest way to get self-started is to complete the first 12 lessons of https://sqlbolt.com/.  It's a slick website that teaches & tests you in small manageable chunks.  Lessons 13+ are good too, but not typically used by entry analysts.
+> 
+> A target audience is a masters student preparing for their first job in health analytics.
+> 
+> The `homework/` directory might be most useful to you; it's a sequence of 6 assignments.  Each assignment has two sql files: one with only the questions (eg, homework/homework-1-empty.sql) and one with answers (homework/homework-1.sql).  The top of each homework indicates what database to use (ie, synpuf_1), which can be found in data-public/exercises/synpuf/.
+>
+> The course relied on two (short & cheap) books found in the readme.md file in the root directory (Nield, 2016; Forta, 2019).
+>
+> Finally, here is an introduction to SQLiteStudio.  It's easily installed on your machine, and fairly similar to the database engines used in most of health research. https://www.youtube.com/watch?v=o_L0gwt4ysA
