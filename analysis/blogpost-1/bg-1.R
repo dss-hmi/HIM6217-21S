@@ -34,12 +34,7 @@ path_db             <- "data-public/exercises/synpuf/synpuf_3.sqlite3"
 # dst <- OuhscMunge::execute_sql_file(path_sql_pt, dsn, execute = F)
 
 # ---- tweak-data --------------------------------------------------------------
-# Create tables
-sql_create[1:length(sql_create)] %>%
-  purrr::walk(~DBI::dbExecute(cnn, .))
-DBI::dbListTables(cnn)
-# Close connection
-DBI::dbDisconnect(cnn) 
+
 
 
 # ----- c1 ---------------
