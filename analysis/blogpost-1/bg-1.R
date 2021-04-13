@@ -15,8 +15,6 @@ library("dplyr"                      )
 requireNamespace("checkmate"                  )
 requireNamespace("testit"                     )
 requireNamespace("config"                     )
-requireNamespace("babynames"                  )
-requireNamespace("TeachingDemos"              )
 requireNamespace("OuhscMunge"                 )  # remotes::install_github("OuhscBbmc/OuhscMunge")
 
 # ---- declare-globals ---------------------------------------------------------
@@ -38,16 +36,14 @@ path_db             <- "data-public/exercises/synpuf/synpuf_3.sqlite3"
 
 
 # ----- c1 ---------------
-
 sql_solution <- "
-SELECT *
-FROM patient
-LIMIT 5
-;
+  SELECT *
+  FROM patient
+  LIMIT 5;
 "
 cnn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = path_db)
 ds_solution <- DBI::dbGetQuery(cnn, sql_solution)
-DBI::dbDisconnect(cnn); rm(cnn, sql_solution)
+DBI::dbDisconnect(cnn); rm(cnn)
 
 cat(sql_solution)
 cat("\n")
